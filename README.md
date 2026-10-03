@@ -1,13 +1,15 @@
 # Edinburgh Cocktail Week Map
 
-An interactive map of every bar serving a £6 signature cocktail during
-[Edinburgh Cocktail Week](https://www.edinburghcocktailweek.co.uk/signature-cocktails).
-The official site lists the bars but has no map, so this site plots them.
+An interactive map of every bar in [Edinburgh Cocktail Week](https://www.edinburghcocktailweek.co.uk):
+the £6 Signature and £9 Prestige cocktail lists, plus the Cocktail Village. The official site
+lists the bars but has no map, so this site plots them.
 
-- Pins are coloured by area. Click one to see its cocktail, ingredients and a directions link.
+- Pins are coloured by area, and Prestige bars are gold-edged diamonds. Click one to see its cocktail, ingredients and a walking directions link.
+- The Cocktail Village at Festival Square has its own pin with opening times, pop-up bars and street food.
+- "Nearest to me" uses your location to sort bars by distance and show walking times.
 - You can search by bar, cocktail or ingredient.
-- You can filter by area, base spirit (gin, rum, tequila…) and features: vegan alternative, accessible, dogs welcome, alcohol-free alternative.
-- You can save bars to plan a route. Saved bars are stored in your browser.
+- You can filter by list (Signature/Prestige), area, base spirit, style and flavour, and features (vegan alternative, accessible, dogs welcome, alcohol-free alternative). "Leave out" hides cocktails with egg white or foams, or with dairy, based on the listed ingredients.
+- You can save bars to plan a night. Saved bars are stored in your browser.
 
 It's a static site with no build step. Leaflet loads from cdnjs, and the basemap
 is drawn from embedded OpenStreetMap vector data, so there's no tile server or API key.
@@ -17,10 +19,11 @@ is drawn from embedded OpenStreetMap vector data, so there's no tile server or A
 ```
 public/
   index.html          the app
-  data/venues.json    bars, cocktails, coordinates (generated)
+  data/venues.json    bars, cocktails, coordinates, Cocktail Village (generated)
   data/basemap.json   simplified streets/parks/water/coastline (generated)
 scripts/
-  update_venues.py    scrape the ECW page + geocode → venues.json
+  update_venues.py    scrape the ECW pages + geocode → venues.json
+  geocache.json       address → [lat, lng]; edit to correct a pin by hand
   build_basemap.py    fetch OSM data via Overpass → basemap.json
 vercel.json           serves public/ as-is
 ```
@@ -39,11 +42,11 @@ If the bar list changes:
 python3 scripts/update_venues.py
 ```
 
-This uses only the Python standard library. Geocoding uses postcodes.io and
-OpenStreetMap Nominatim, and takes about 2 minutes because of Nominatim's rate
-limit. Known typos in the source listing are fixed in `ADDRESS_FIXES` and
-`PREFER_NOMINATIM` at the top of the script. Check any new bars on the map
-after a refresh.
+This uses only the Python standard library. Addresses already in
+`scripts/geocache.json` aren't looked up again. New ones are geocoded with
+postcodes.io and OpenStreetMap Nominatim, at about one per second. Known typos
+in the source listings are fixed in `ADDRESS_FIXES` and `PREFER_NOMINATIM` at
+the top of the script. Check any new bars on the map after a refresh.
 
 The basemap rarely needs rebuilding:
 
