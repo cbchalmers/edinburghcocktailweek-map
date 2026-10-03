@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Interactive map of every bar serving a £6 signature cocktail during Edinburgh Cocktail Week, with filters by area, spirit and accessibility.">
+<meta name="theme-color" content="#a8234f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M5 5h22L16 17z' fill='%23a8234f'/%3E%3Cpath d='M16 17v9M10 27h12' stroke='%23a8234f' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>Edinburgh Cocktail Week Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+/* Layout: full-height app — filter + venue list rail on the left, vector map of the city on the right; stacks map-over-list on phones. */
+:root{
+  --bg:#f3f1ee; --panel:#fbfaf8; --ink:#231a22; --muted:#6f6470; --line:#e2dcd9;
+  --accent:#a8234f; --accent-ink:#ffffff; --accent-soft:#f6e3ea;
+  --land:#ece7e1; --road:#ffffff; --road-major:#f5d9a8; --road-casing:#d8cfc6; --path:#e6dcd2;
+  --park:#d5e3c4; --water:#b9d3e0; --rail:#b8aeb0; --label:#6b5f63; --label-halo:#ece7e1;
+  --display:"Young Serif",Georgia,"Times New Roman",serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --shadow:0 1px 2px rgba(35,26,34,.08),0 6px 20px rgba(35,26,34,.10);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17131a; --panel:#1e1922; --ink:#f1eaef; --muted:#a698a6; --line:#342c38;
+  --accent:#ff6f9a; --accent-ink:#1b0f15; --accent-soft:#3a2130;
+  --land:#211c25; --road:#3a3340; --road-major:#6a5440; --road-casing:#2a2430; --path:#2f2934;
+  --park:#26332a; --water:#1d3140; --rail:#4d4552; --label:#a99dab; --label-halo:#211c25;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17131a; --panel:#1e1922; --ink:#f1eaef; --muted:#a698a6; --line:#342c38;
+  --accent:#ff6f9a; --accent-ink:#1b0f15; --accent-soft:#3a2130;
+  --land:#211c25; --road:#3a3340; --road-major:#6a5440; --road-casing:#2a2430; --path:#2f2934;
+  --park:#26332a; --water:#1d3140; --rail:#4d4552; --label:#a99dab; --label-halo:#211c25;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45); color-scheme:dark}
+
+html,body{height:100%;margin:0}
+body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.app{display:grid;grid-template-columns:minmax(330px,400px) 1fr;height:100%}
+.rail{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--panel);border-right:1px solid var(--line)}
+.head{padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+h1{font-family:var(--display);font-weight:400;font-size:1.5rem;line-height:1.1;margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.price{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.search{position:relative}
+.search input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--muted)}
+.filters{display:flex;flex-direction:column;gap:10px}
+.fgroup{display:flex;flex-direction:column;gap:6px}
+.flabel{font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 10px;font-size:.82rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;line-height:1.3}
+.chip:hover{border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.chip .dot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 1.5px var(--panel)}
+.chip .n{font-family:var(--mono);font-size:.7rem;opacity:.65}
+.summary{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.summary b{color:var(--ink);font-variant-numeric:tabular-nums}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font-weight:600;font-size:.85rem}
+.collapse-toggle{display:none}
+
+.list{flex:1;overflow-y:auto;min-height:0;padding:6px 0 24px}
+.area-h{position:sticky;top:0;z-index:1;background:var(--panel);padding:12px 20px 6px;font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+.area-h .dot{width:9px;height:9px;border-radius:50%}
+.venue{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:12px 20px;border-bottom:1px solid var(--line);cursor:pointer}
+.venue:hover{background:var(--bg)}
+.venue.active{background:var(--accent-soft)}
+.venue .vn{font-weight:700;font-size:.95rem;min-width:0}
+.venue .va{grid-column:1;font-size:.8rem;color:var(--muted)}
+.venue .ck{grid-column:1/-1;margin-top:6px;display:flex;flex-direction:column;gap:6px}
+.cname{font-family:var(--display);font-size:1rem;line-height:1.2;color:var(--accent)}
+.cing{font-size:.82rem;color:var(--muted);margin-top:2px}
+.tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.tag{font-family:var(--mono);font-size:.66rem;padding:1px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
+.save{grid-row:1/3;grid-column:2;align-self:start;background:none;border:0;padding:4px;cursor:pointer;color:var(--muted);line-height:0}
+.save svg{width:20px;height:20px}
+.save[aria-pressed="true"]{color:var(--accent)}
+.save[aria-pressed="true"] svg{fill:currentColor}
+.empty{padding:32px 20px;color:var(--muted);text-align:center}
+.foot{padding:10px 20px;border-top:1px solid var(--line);font-size:.72rem;color:var(--muted)}
+.foot a{color:inherit}
+
+.mapwrap{position:relative;min-width:0;min-height:0}
+#map{position:absolute;inset:0;background:var(--land)}
+.leaflet-container{font-family:var(--body);background:var(--land)}
+.leaflet-control-attribution{background:color-mix(in srgb,var(--panel) 85%,transparent)!important;color:var(--muted)!important;font-size:10px}
+.leaflet-control-attribution a{color:var(--muted)!important}
+.leaflet-bar a{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important}
+.leaflet-bar{border:1px solid var(--line)!important;box-shadow:var(--shadow)!important}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.leaflet-popup-content-wrapper{border-radius:12px}
+.leaflet-popup-content{margin:14px 16px;min-width:220px;max-width:280px;font-size:.88rem;line-height:1.4}
+.leaflet-container a.leaflet-popup-close-button{color:var(--muted)}
+.pop-area{font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:flex;gap:6px;align-items:center}
+.pop-area .dot{width:8px;height:8px;border-radius:50%}
+.pop-name{font-weight:700;font-size:1rem;margin:2px 0 0}
+.pop-addr{font-size:.8rem;color:var(--muted);margin-bottom:8px}
+.pop-ck+.pop-ck{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.pop-actions{display:flex;gap:12px;margin-top:10px;font-size:.82rem;font-weight:600}
+.pop-actions a,.pop-actions button{color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:none;font-weight:600}
+.st-label{pointer-events:none!important;white-space:nowrap;font-size:10.5px;font-weight:500;color:var(--label);text-shadow:0 0 3px var(--label-halo),0 0 3px var(--label-halo),0 0 2px var(--label-halo)}
+.st-label span{display:inline-block;transform:translate(-50%,-50%)}
+.st-label.r3{font-weight:700;font-size:11.5px}
+.dist-label{pointer-events:none!important;white-space:nowrap;font-family:var(--display);font-size:15px;letter-spacing:.04em;color:var(--muted);opacity:.75;text-shadow:0 0 4px var(--label-halo),0 0 4px var(--label-halo)}
+.dist-label span{display:inline-block;transform:translate(-50%,-50%)}
+.legend-key{position:absolute;right:12px;bottom:28px;z-index:500;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:.72rem;color:var(--muted);box-shadow:var(--shadow);display:grid;grid-template-columns:auto auto;gap:3px 10px}
+.legend-key b{font-family:var(--mono);color:var(--ink);font-weight:500}
+
+@media (max-width:760px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto 42% 1fr;height:100%}
+  .rail{display:contents}
+  .head{grid-row:1;background:var(--panel);padding:12px 16px 10px;gap:10px;max-height:60vh;overflow-y:auto}
+  .mapwrap{grid-row:2;border-block:1px solid var(--line)}
+  .list{grid-row:3;background:var(--panel)}
+  .foot{display:none}
+  .collapse-toggle{display:inline}
+  .filters.collapsed{display:none}
+  .venue,.area-h{padding-inline:16px}
+  .legend-key{display:none}
+  h1{font-size:1.25rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="head">
+      <div class="brand">
+        <h1>Edinburgh Cocktail Week <em>Map</em></h1>
+        <span class="price">£6 · wristband</span>
+      </div>
+      <label class="search" for="q">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search bars, cocktails, ingredients" autocomplete="off" aria-label="Search bars, cocktails or ingredients">
+      </label>
+      <div class="summary">
+        <span><b id="count">0</b> of <b id="total">0</b> bars</span>
+        <span style="display:flex;gap:14px">
+          <button class="linkbtn collapse-toggle" id="toggleFilters" aria-expanded="false">Filters</button>
+          <button class="linkbtn" id="reset" hidden>Clear filters</button>
+        </span>
+      </div>
+      <div class="filters collapsed" id="filters">
+        <div class="fgroup"><span class="flabel">Area</span><div class="chips" id="areas"></div></div>
+        <div class="fgroup"><span class="flabel">Base spirit</span><div class="chips" id="spirits"></div></div>
+        <div class="fgroup"><span class="flabel">Must have</span><div class="chips" id="feats"></div></div>
+      </div>
+    </div>
+    <div class="list" id="list" aria-live="polite"></div>
+    <div class="foot">Unofficial fan map. Bars and cocktails from <a href="https://www.edinburghcocktailweek.co.uk/signature-cocktails" target="_blank" rel="noopener">edinburghcocktailweek.co.uk</a>, read 3 Oct 2026. Pin positions are geocoded from the listed addresses, so check before you walk. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.</div>
+  </aside>
+  <div class="mapwrap">
+    <div id="map" role="application" aria-label="Map of participating bars"></div>
+    <div class="legend-key" aria-label="Tag key">
+      <b>VE</b><span>Vegan alternative</span><b>AC</b><span>Accessible venue</span><b>DF</b><span>Dogs welcome</span><b>NA</b><span>Non-alcoholic alternative</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(async () => {
+const [VENUES, BASE] = await Promise.all(["data/venues.json", "data/basemap.json"].map(u => fetch(u).then(r => r.json())));
+
+const AREAS = [
+  ["City Centre (East)", "#c2185b"],
+  ["City Centre (West)", "#7b3fa0"],
+  ["Grassmarket & Old Town", "#d9822b"],
+  ["Broughton", "#2e8b57"],
+  ["Leith", "#1f6fb2"],
+  ["Stockbridge & Canonmills", "#0f9a9a"],
+  ["Bruntsfield & Tollcross", "#8a6d1f"],
+];
+const AREA_COLOR = Object.fromEntries(AREAS);
+const FEATS = [["VE","Vegan alt."],["AC","Accessible"],["DF","Dogs welcome"],["NA","Alcohol-free alt."]];
+const SPIRITS = [
+  ["Gin", /\bgin\b|sloe gin|old tom/i],
+  ["Vodka", /vodka/i],
+  ["Rum", /\brum\b|kraken|phraya|havana/i],
+  ["Tequila & mezcal", /tequila|mezcal|margarita/i],
+  ["Whisky", /whisk(e)?y|scotch/i],
+  ["Brandy & pisco", /brandy|pisco|cognac|eau de vie/i],
+  ["Bubbles & wine", /prosecco|champagne|sparkling|pinot|wine|sake|tokaj|lillet/i],
+];
+
+// ---- data prep
+VENUES.forEach((v, i) => {
+  v.id = i;
+  v.color = AREA_COLOR[v.area] || "#888";
+  v.tags = [...new Set(v.cocktails.flatMap(c => c.tags))];
+  v.spirits = SPIRITS.filter(([, re]) => v.cocktails.some(c => re.test(c.ingredients))).map(([n]) => n);
+  v.hay = (v.name + " " + v.address + " " + v.area + " " + v.cocktails.map(c => c.name + " " + c.ingredients).join(" ")).toLowerCase();
+});
+const KEEP_UPPER = new Set(["NQ64", "IV", "OMNI", "IPA", "II"]);
+const titleCase = s => s.replace(/\S+/g, w => KEEP_UPPER.has(w) ? w : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+  .replace(/ (Of|The|And|At|On|By|To|In|A)\b/g, (m, p) => " " + p.toLowerCase())
+  .replace(/(['’])S\b/g, "$1s").replace(/\bMc(\w)/g, (m, c) => "Mc" + c.toUpperCase());
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// ---- state
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const saved = new Set(store.get("ecw-saved", []));
+const state = { q: "", areas: new Set(), spirits: new Set(), feats: new Set(), savedOnly: false };
+
+// ---- filter chips
+function chip(label, opts = {}) {
+  const b = document.createElement("button");
+  b.className = "chip"; b.type = "button"; b.setAttribute("aria-pressed", "false");
+  b.innerHTML = (opts.color ? `<span class="dot" style="background:${opts.color}"></span>` : "") + esc(label) + (opts.n != null ? ` <span class="n">${opts.n}</span>` : "");
+  return b;
+}
+function buildChips(el, items, set, getN, color) {
+  items.forEach(([key, label]) => {
+    const b = chip(label, { n: getN(key), color: color && color(key) });
+    b.onclick = () => { set.has(key) ? set.delete(key) : set.add(key); b.setAttribute("aria-pressed", set.has(key)); render(); };
+    el.appendChild(b);
+  });
+}
+buildChips(document.getElementById("areas"), AREAS.map(([a]) => [a, a]), state.areas, a => VENUES.filter(v => v.area === a).length, a => AREA_COLOR[a]);
+buildChips(document.getElementById("spirits"), SPIRITS.map(([s]) => [s, s]), state.spirits, s => VENUES.filter(v => v.spirits.includes(s)).length);
+buildChips(document.getElementById("feats"), FEATS, state.feats, f => VENUES.filter(v => v.tags.includes(f)).length);
+const savedChip = chip("Saved bars", { n: saved.size });
+savedChip.onclick = () => { state.savedOnly = !state.savedOnly; savedChip.setAttribute("aria-pressed", state.savedOnly); render(); };
+document.getElementById("feats").appendChild(savedChip);
+function refreshSavedCount() { savedChip.querySelector(".n").textContent = saved.size; }
+
+// ---- map
+const map = L.map("map", { zoomControl: true, minZoom: 12, maxZoom: 18, preferCanvas: true, attributionControl: true,
+  maxBounds: [[55.89, -3.32], [56.02, -3.08]], maxBoundsViscosity: 0.8, zoomSnap: 0.5 });
+map.attributionControl.setPrefix(false).addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>');
+
+const renderer = L.canvas({ padding: 0.5 });
+const decode = arr => { const out = []; let a = 0, b = 0; for (let i = 0; i < arr.length; i += 2) { a += arr[i]; b += arr[i + 1]; out.push([a / 1e5, b / 1e5]); } return out; };
+const geo = Object.fromEntries(Object.entries(BASE.layers).map(([k, v]) => [k, v.map(decode)]));
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const W = (z, base) => Math.max(0.5, base * Math.pow(1.6, z - 15));
+const base = {
+  sea:   L.polygon(geo.sea, { renderer, stroke: false, fillOpacity: 1, interactive: false }),
+  park:  L.polygon(geo.park, { renderer, stroke: false, fillOpacity: 1, interactive: false }),
+  water: L.polygon(geo.water, { renderer, stroke: false, fillOpacity: 1, interactive: false }),
+  river: L.polyline(geo.river, { renderer, interactive: false, lineCap: "round" }),
+  rail:  L.polyline(geo.rail, { renderer, interactive: false, dashArray: "4 4" }),
+  path:  L.polyline(geo.path, { renderer, interactive: false, lineCap: "round", lineJoin: "round" }),
+  minorCase: L.polyline(geo.minor, { renderer, interactive: false, lineCap: "round", lineJoin: "round" }),
+  majorCase: L.polyline(geo.major, { renderer, interactive: false, lineCap: "round", lineJoin: "round" }),
+  minor: L.polyline(geo.minor, { renderer, interactive: false, lineCap: "round", lineJoin: "round" }),
+  major: L.polyline(geo.major, { renderer, interactive: false, lineCap: "round", lineJoin: "round" }),
+};
+Object.values(base).forEach(l => l.addTo(map));
+function styleBase() {
+  const z = map.getZoom();
+  base.sea.setStyle({ fillColor: css("--water") });
+  base.park.setStyle({ fillColor: css("--park") });
+  base.water.setStyle({ fillColor: css("--water") });
+  base.river.setStyle({ color: css("--water"), weight: W(z, 4) });
+  base.rail.setStyle({ color: css("--rail"), weight: z >= 15 ? 1.5 : 1, opacity: 0.8 });
+  base.path.setStyle({ color: css("--path"), weight: W(z, 3.5) });
+  base.minorCase.setStyle({ color: css("--road-casing"), weight: W(z, 4.6), opacity: z >= 14 ? 1 : 0 });
+  base.majorCase.setStyle({ color: css("--road-casing"), weight: W(z, 7.4) });
+  base.minor.setStyle({ color: css("--road"), weight: W(z, 3.2), opacity: z >= 13 ? 1 : 0.6 });
+  base.major.setStyle({ color: css("--road-major"), weight: W(z, 5.6) });
+  markers.forEach(m => m.setStyle(markerStyle(m.venue, m.venue.id === activeId)));
+}
+
+// street + district labels
+const labelLayer = L.layerGroup().addTo(map);
+const DISTRICTS = [["New Town",55.9555,-3.1985],["Old Town",55.9495,-3.1895],["Leith",55.9715,-3.1715],["Stockbridge",55.9585,-3.2105],["Broughton",55.9605,-3.1885],["Tollcross",55.9435,-3.2045],["Bruntsfield",55.9375,-3.2085],["Canonmills",55.9640,-3.2010],["Haymarket",55.9455,-3.2195],["Southside",55.9440,-3.1825],["Morningside",55.9290,-3.2095]];
+function updateLabels() {
+  labelLayer.clearLayers();
+  const z = map.getZoom(), b = map.getBounds().pad(0.1);
+  if (z < 15.5) {
+    DISTRICTS.forEach(([n, la, lo]) => labelLayer.addLayer(L.marker([la, lo], { interactive: false, keyboard: false,
+      icon: L.divIcon({ className: "dist-label", html: `<span>${n}</span>`, iconSize: [0, 0] }) })));
+  }
+  const minRank = z >= 16.5 ? 1 : z >= 15.5 ? 2 : z >= 14.5 ? 3 : 9;
+  BASE.labels.forEach(([n, la, lo, r, ang]) => {
+    if (r < minRank || !b.contains([la, lo])) return;
+    labelLayer.addLayer(L.marker([la, lo], { interactive: false, keyboard: false,
+      icon: L.divIcon({ className: "st-label r" + r, html: `<span style="transform:translate(-50%,-50%) rotate(${ang}deg)">${esc(n)}</span>`, iconSize: [0, 0] }) }));
+  });
+}
+
+// venue markers
+let activeId = null;
+const markerStyle = (v, active) => ({ radius: active ? 10 : (map.getZoom() >= 15 ? 7.5 : 6), fillColor: v.color, fillOpacity: 1,
+  color: active ? css("--ink") : css("--panel"), weight: active ? 3 : 2 });
+const markerLayer = L.featureGroup().addTo(map);
+const markers = VENUES.map(v => {
+  const m = L.circleMarker([v.lat, v.lng], { ...markerStyle(v, false), renderer: L.svg(), bubblingMouseEvents: false });
+  m.venue = v;
+  m.bindTooltip(titleCase(v.name), { direction: "top", offset: [0, -8] });
+  m.bindPopup(() => popupHtml(v), { autoPanPadding: [30, 30], maxWidth: 300 });
+  m.on("click", () => select(v.id, { fromMap: true }));
+  m.on("popupclose", () => { if (activeId === v.id) select(null); });
+  return m;
+});
+
+function popupHtml(v) {
+  const q = encodeURIComponent(titleCase(v.name) + ", " + v.address + ", Edinburgh");
+  return `<div class="pop-area"><span class="dot" style="background:${v.color}"></span>${esc(v.area)}</div>
+    <div class="pop-name">${esc(titleCase(v.name))}</div>
+    <div class="pop-addr">${esc(v.address)}</div>
+    ${v.cocktails.map(c => `<div class="pop-ck"><div class="cname">${esc(titleCase(c.name))}</div><div class="cing">${esc(c.ingredients)}</div>
+      ${c.tags.length ? `<div class="tags">${c.tags.map(t => `<span class="tag" title="${esc(FEATS.find(f => f[0] === t)?.[1] || t)}">${t}</span>`).join("")}</div>` : ""}</div>`).join("")}
+    <div class="pop-actions"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">Directions ↗</a>
+    <button type="button" data-save="${v.id}">${saved.has(v.id) ? "Remove from saved" : "Save bar"}</button></div>`;
+}
+map.on("popupopen", e => {
+  const btn = e.popup.getElement().querySelector("[data-save]");
+  if (btn) btn.onclick = () => { toggleSave(+btn.dataset.save); btn.textContent = saved.has(+btn.dataset.save) ? "Remove from saved" : "Save bar"; };
+});
+
+function toggleSave(id) {
+  saved.has(id) ? saved.delete(id) : saved.add(id);
+  store.set("ecw-saved", [...saved]);
+  refreshSavedCount();
+  const b = document.querySelector(`.venue[data-id="${id}"] .save`);
+  if (b) b.setAttribute("aria-pressed", saved.has(id));
+  if (state.savedOnly) render();
+}
+
+// ---- list + filtering
+const listEl = document.getElementById("list");
+document.getElementById("total").textContent = VENUES.length;
+function matches(v) {
+  if (state.areas.size && !state.areas.has(v.area)) return false;
+  if (state.spirits.size && ![...state.spirits].some(s => v.spirits.includes(s))) return false;
+  if (state.feats.size && ![...state.feats].every(f => v.tags.includes(f))) return false;
+  if (state.savedOnly && !saved.has(v.id)) return false;
+  if (state.q) return state.q.split(/\s+/).every(t => v.hay.includes(t));
+  return true;
+}
+let firstRender = true;
+function render() {
+  const shown = VENUES.filter(matches);
+  document.getElementById("count").textContent = shown.length;
+  document.getElementById("reset").hidden = !(state.q || state.areas.size || state.spirits.size || state.feats.size || state.savedOnly);
+  markerLayer.clearLayers();
+  shown.forEach(v => markerLayer.addLayer(markers[v.id]));
+  listEl.innerHTML = "";
+  if (!shown.length) {
+    listEl.innerHTML = `<div class="empty">No bars match these filters.<br><button class="linkbtn" onclick="resetAll()">Clear filters</button></div>`;
+    return;
+  }
+  const frag = document.createDocumentFragment();
+  AREAS.forEach(([a, col]) => {
+    const vs = shown.filter(v => v.area === a).sort((x, y) => x.name.localeCompare(y.name));
+    if (!vs.length) return;
+    const h = document.createElement("div");
+    h.className = "area-h"; h.innerHTML = `<span class="dot" style="background:${col}"></span>${esc(a)} · ${vs.length}`;
+    frag.appendChild(h);
+    vs.forEach(v => {
+      const el = document.createElement("article");
+      el.className = "venue" + (v.id === activeId ? " active" : ""); el.dataset.id = v.id; el.tabIndex = 0;
+      el.innerHTML = `<div class="vn">${esc(titleCase(v.name))}</div>
+        <button class="save" type="button" aria-label="Save ${esc(titleCase(v.name))}" aria-pressed="${saved.has(v.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg></button>
+        <div class="va">${esc(v.address)}</div>
+        <div class="ck">${v.cocktails.map(c => `<div><div class="cname">${esc(titleCase(c.name))}</div><div class="cing">${esc(c.ingredients)}</div>${c.tags.length ? `<div class="tags">${c.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>` : ""}</div>`).join("")}</div>`;
+      el.querySelector(".save").onclick = e => { e.stopPropagation(); toggleSave(v.id); };
+      el.onclick = () => select(v.id);
+      el.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(v.id); } };
+      frag.appendChild(el);
+    });
+  });
+  listEl.appendChild(frag);
+  if (!firstRender && shown.length && !state.savedOnly) {
+    map.flyToBounds(markerLayer.getBounds(), { padding: [40, 40], maxZoom: 16, duration: 0.6 });
+  }
+  firstRender = false;
+}
+function select(id, { fromMap = false } = {}) {
+  const prev = activeId; activeId = id;
+  if (prev != null) markers[prev].setStyle(markerStyle(VENUES[prev], false));
+  document.querySelectorAll(".venue.active").forEach(e => e.classList.remove("active"));
+  if (id == null) return;
+  const m = markers[id]; m.setStyle(markerStyle(VENUES[id], true)); m.bringToFront();
+  const el = listEl.querySelector(`.venue[data-id="${id}"]`);
+  if (el) { el.classList.add("active"); if (fromMap) el.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
+  if (!fromMap) {
+    map.flyTo(m.getLatLng(), Math.max(map.getZoom(), 16), { duration: 0.5 });
+    const open = () => { if (activeId === id && !m.isPopupOpen()) m.openPopup(); };
+    map.once("moveend", open);
+    setTimeout(open, 900);
+  }
+}
+window.resetAll = function () {
+  state.q = ""; document.getElementById("q").value = "";
+  [state.areas, state.spirits, state.feats].forEach(s => s.clear()); state.savedOnly = false;
+  document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "false"));
+  render();
+};
+document.getElementById("reset").onclick = resetAll;
+let qT; document.getElementById("q").addEventListener("input", e => { clearTimeout(qT); qT = setTimeout(() => { state.q = e.target.value.trim().toLowerCase(); render(); }, 150); });
+const ft = document.getElementById("toggleFilters");
+ft.onclick = () => { const f = document.getElementById("filters"); f.classList.toggle("collapsed"); ft.setAttribute("aria-expanded", !f.classList.contains("collapsed")); ft.textContent = f.classList.contains("collapsed") ? "Filters" : "Hide filters"; };
+if (matchMedia("(min-width: 761px)").matches) document.getElementById("filters").classList.remove("collapsed");
+
+// ---- boot
+map.fitBounds(L.latLngBounds(VENUES.map(v => [v.lat, v.lng])), { padding: [24, 24] });
+render();
+styleBase(); updateLabels();
+map.on("zoomend", () => { styleBase(); });
+map.on("moveend", updateLabels);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", styleBase);
+new MutationObserver(styleBase).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+})().catch(err => {
+  document.getElementById("list").innerHTML = `<div class="empty">The bar list failed to load. Refresh the page to try again.</div>`;
+  console.error(err);
+});
+</script>
+</body>
+</html>
