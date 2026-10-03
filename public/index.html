@@ -53,7 +53,13 @@ h1 em{font-style:normal;color:var(--accent)}
 .source{margin:4px 0 0;font-size:.8rem;color:var(--muted)}
 .source a{color:var(--accent);font-weight:600}
 .list{overscroll-behavior:contain}
-#map{touch-action:none}
+#map{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.pin-hit{display:grid;place-items:center;cursor:pointer;background:none;border:0}
+.pin{width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px var(--panel),0 1px 3px rgba(0,0,0,.35);transition:transform .12s}
+.z-hi .pin{width:15px;height:15px}
+.pin-hit:hover .pin{transform:scale(1.2)}
+.pin-hit.active{z-index:1000!important}
+.pin-hit.active .pin{width:20px;height:20px;box-shadow:0 0 0 3px var(--ink),0 0 0 5px var(--panel)}
 .search{position:relative}
 .search input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
 .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--muted)}
@@ -248,7 +254,6 @@ const map = L.map("map", { zoomControl: true, minZoom: 12, maxZoom: 18, preferCa
 map.attributionControl.setPrefix(false).addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>');
 
 const renderer = L.canvas({ padding: 0.2 });
-const markerRenderer = L.svg({ padding: 0.2 });
 const decode = arr => { const out = []; let a = 0, b = 0; for (let i = 0; i < arr.length; i += 2) { a += arr[i]; b += arr[i + 1]; out.push([a / 1e5, b / 1e5]); } return out; };
 const geo = Object.fromEntries(Object.entries(BASE.layers).map(([k, v]) => [k, v.map(decode)]));
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -278,37 +283,42 @@ function styleBase() {
   base.majorCase.setStyle({ color: css("--road-casing"), weight: W(z, 7.4) });
   base.minor.setStyle({ color: css("--road"), weight: W(z, 3.2), opacity: z >= 13 ? 1 : 0.6 });
   base.major.setStyle({ color: css("--road-major"), weight: W(z, 5.6) });
-  markers.forEach(m => m.setStyle(markerStyle(m.venue, m.venue.id === activeId)));
+  map.getContainer().classList.toggle("z-hi", z >= 15);
 }
 
 // street + district labels
+map.createPane("labels").style.zIndex = 450; // above roads, below pins
+map.getPane("labels").style.pointerEvents = "none";
 const labelLayer = L.layerGroup().addTo(map);
 const DISTRICTS = [["New Town",55.9555,-3.1985],["Old Town",55.9495,-3.1895],["Leith",55.9715,-3.1715],["Stockbridge",55.9585,-3.2105],["Broughton",55.9605,-3.1885],["Tollcross",55.9435,-3.2045],["Bruntsfield",55.9375,-3.2085],["Canonmills",55.9640,-3.2010],["Haymarket",55.9455,-3.2195],["Southside",55.9440,-3.1825],["Morningside",55.9290,-3.2095]];
 function updateLabels() {
   labelLayer.clearLayers();
   const z = map.getZoom(), b = map.getBounds().pad(0.1);
   if (z < 15.5) {
-    DISTRICTS.forEach(([n, la, lo]) => labelLayer.addLayer(L.marker([la, lo], { interactive: false, keyboard: false,
+    DISTRICTS.forEach(([n, la, lo]) => labelLayer.addLayer(L.marker([la, lo], { pane: "labels", interactive: false, keyboard: false,
       icon: L.divIcon({ className: "dist-label", html: `<span>${n}</span>`, iconSize: [0, 0] }) })));
   }
   const minRank = z >= 16.5 ? 1 : z >= 15.5 ? 2 : z >= 14.5 ? 3 : 9;
   BASE.labels.forEach(([n, la, lo, r, ang]) => {
     if (r < minRank || !b.contains([la, lo])) return;
-    labelLayer.addLayer(L.marker([la, lo], { interactive: false, keyboard: false,
+    labelLayer.addLayer(L.marker([la, lo], { pane: "labels", interactive: false, keyboard: false,
       icon: L.divIcon({ className: "st-label r" + r, html: `<span style="transform:translate(-50%,-50%) rotate(${ang}deg)">${esc(n)}</span>`, iconSize: [0, 0] }) }));
   });
 }
 
 // venue markers
 let activeId = null;
-const markerStyle = (v, active) => ({ radius: active ? 10 : (map.getZoom() >= 15 ? 7.5 : 6), fillColor: v.color, fillOpacity: 1,
-  color: active ? css("--ink") : css("--panel"), weight: active ? 3 : 2 });
+const canHover = matchMedia("(hover: hover)").matches;
+const setActive = (m, on) => { const el = m.getElement(); if (el) el.classList.toggle("active", on); m.setZIndexOffset(on ? 1000 : 0); };
 const markerLayer = L.featureGroup().addTo(map);
 const markers = VENUES.map(v => {
-  const m = L.circleMarker([v.lat, v.lng], { ...markerStyle(v, false), renderer: markerRenderer, bubblingMouseEvents: false });
+  // 32px tap target around a small dot, so pins are easy to hit on touch screens
+  const m = L.marker([v.lat, v.lng], { alt: titleCase(v.name), riseOnHover: true,
+    icon: L.divIcon({ className: "pin-hit", html: `<span class="pin" style="--c:${v.color}"></span>`, iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -8] }) });
   m.venue = v;
-  m.bindTooltip(titleCase(v.name), { direction: "top", offset: [0, -8] });
+  if (canHover) m.bindTooltip(titleCase(v.name), { direction: "top", offset: [0, -10] });
   m.bindPopup(() => popupHtml(v), { autoPanPadding: [30, 30], maxWidth: 300 });
+  m.on("add", () => setActive(m, v.id === activeId));
   m.on("click", () => select(v.id, { fromMap: true }));
   m.on("popupclose", () => { if (activeId === v.id) select(null); });
   return m;
@@ -389,10 +399,10 @@ function render() {
 }
 function select(id, { fromMap = false } = {}) {
   const prev = activeId; activeId = id;
-  if (prev != null) markers[prev].setStyle(markerStyle(VENUES[prev], false));
+  if (prev != null) setActive(markers[prev], false);
   document.querySelectorAll(".venue.active").forEach(e => e.classList.remove("active"));
   if (id == null) return;
-  const m = markers[id]; m.setStyle(markerStyle(VENUES[id], true)); m.bringToFront();
+  const m = markers[id]; setActive(m, true);
   const el = listEl.querySelector(`.venue[data-id="${id}"]`);
   if (el) { el.classList.add("active"); if (fromMap) el.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
   if (!fromMap) {
