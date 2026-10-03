@@ -6,7 +6,7 @@
 <meta name="description" content="Interactive map of every bar serving a £6 signature cocktail during Edinburgh Cocktail Week, with filters by area, spirit and accessibility.">
 <meta name="theme-color" content="#a8234f">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M5 5h22L16 17z' fill='%23a8234f'/%3E%3Cpath d='M16 17v9M10 27h12' stroke='%23a8234f' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
-<title>Edinburgh Cocktail Week Map</title>
+<title>Edinburgh Cocktail Week 2026 Venues</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -36,7 +36,8 @@
   --park:#26332a; --water:#1d3140; --rail:#4d4552; --label:#a99dab; --label-halo:#211c25;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45); color-scheme:dark}
 
-html,body{height:100%;margin:0}
+html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
+@supports (height:100dvh){html,body{height:100dvh}}
 body{padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
 *{box-sizing:border-box}
@@ -49,7 +50,10 @@ button{font:inherit;color:inherit}
 .brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 h1{font-family:var(--display);font-weight:400;font-size:1.5rem;line-height:1.1;margin:0;text-wrap:balance}
 h1 em{font-style:normal;color:var(--accent)}
-.price{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.source{margin:4px 0 0;font-size:.8rem;color:var(--muted)}
+.source a{color:var(--accent);font-weight:600}
+.list{overscroll-behavior:contain}
+#map{touch-action:none}
 .search{position:relative}
 .search input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
 .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--muted)}
@@ -135,8 +139,10 @@ h1 em{font-style:normal;color:var(--accent)}
   <aside class="rail">
     <div class="head">
       <div class="brand">
-        <h1>Edinburgh Cocktail Week <em>Map</em></h1>
-        <span class="price">£6 · wristband</span>
+        <div>
+          <h1>Edinburgh Cocktail Week <em>2026 Venues</em></h1>
+          <p class="source">Unofficial map. Data from <a href="https://www.edinburghcocktailweek.co.uk" target="_blank" rel="noopener">edinburghcocktailweek.co.uk</a></p>
+        </div>
       </div>
       <label class="search" for="q">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -156,7 +162,7 @@ h1 em{font-style:normal;color:var(--accent)}
       </div>
     </div>
     <div class="list" id="list" aria-live="polite"></div>
-    <div class="foot">Unofficial fan map. Bars and cocktails from <a href="https://www.edinburghcocktailweek.co.uk/signature-cocktails" target="_blank" rel="noopener">edinburghcocktailweek.co.uk</a>, read 3 Oct 2026. Pin positions are geocoded from the listed addresses, so check before you walk. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.</div>
+    <div class="foot">2026 bars and cocktails from the <a href="https://www.edinburghcocktailweek.co.uk/signature-cocktails" target="_blank" rel="noopener">official list</a>, read 3 Oct 2026. Pins are placed from the listed addresses, so check before you walk. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.</div>
   </aside>
   <div class="mapwrap">
     <div id="map" role="application" aria-label="Map of participating bars"></div>
@@ -241,7 +247,8 @@ const map = L.map("map", { zoomControl: true, minZoom: 12, maxZoom: 18, preferCa
   maxBounds: [[55.89, -3.32], [56.02, -3.08]], maxBoundsViscosity: 0.8, zoomSnap: 0.5 });
 map.attributionControl.setPrefix(false).addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>');
 
-const renderer = L.canvas({ padding: 0.5 });
+const renderer = L.canvas({ padding: 0.2 });
+const markerRenderer = L.svg({ padding: 0.2 });
 const decode = arr => { const out = []; let a = 0, b = 0; for (let i = 0; i < arr.length; i += 2) { a += arr[i]; b += arr[i + 1]; out.push([a / 1e5, b / 1e5]); } return out; };
 const geo = Object.fromEntries(Object.entries(BASE.layers).map(([k, v]) => [k, v.map(decode)]));
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -298,7 +305,7 @@ const markerStyle = (v, active) => ({ radius: active ? 10 : (map.getZoom() >= 15
   color: active ? css("--ink") : css("--panel"), weight: active ? 3 : 2 });
 const markerLayer = L.featureGroup().addTo(map);
 const markers = VENUES.map(v => {
-  const m = L.circleMarker([v.lat, v.lng], { ...markerStyle(v, false), renderer: L.svg(), bubblingMouseEvents: false });
+  const m = L.circleMarker([v.lat, v.lng], { ...markerStyle(v, false), renderer: markerRenderer, bubblingMouseEvents: false });
   m.venue = v;
   m.bindTooltip(titleCase(v.name), { direction: "top", offset: [0, -8] });
   m.bindPopup(() => popupHtml(v), { autoPanPadding: [30, 30], maxWidth: 300 });
