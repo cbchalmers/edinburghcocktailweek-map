@@ -233,7 +233,7 @@ h1 em{font-style:normal;color:var(--accent)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 (async () => {
-const [DATA, BASE] = await Promise.all(["data/venues.json", "data/basemap.json"].map(u => fetch(u).then(r => r.json())));
+const [DATA, BASE] = await Promise.all(["data/venues.json", "data/basemap.json"].map(u => fetch(u, { cache: "no-cache" }).then(r => r.json()))); // revalidate so page and data never mismatch
 const VENUES = DATA.venues, VILLAGE = DATA.village;
 
 const AREAS = [
