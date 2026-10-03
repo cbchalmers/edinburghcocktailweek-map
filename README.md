@@ -64,3 +64,10 @@ with no framework and no build command.
 The bar and cocktail data comes from edinburghcocktailweek.co.uk. This is an
 unofficial fan project and isn't affiliated with Edinburgh Cocktail Week.
 Map data © OpenStreetMap contributors, ODbL.
+
+## Licence
+
+The code is released under the [MIT licence](LICENSE). The licence doesn't
+cover the data files: the bar and cocktail listings belong to Edinburgh
+Cocktail Week, and `public/data/basemap.json` is derived from OpenStreetMap
+under the [ODbL](https://www.openstreetmap.org/copyright).
