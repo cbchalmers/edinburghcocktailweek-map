@@ -93,7 +93,7 @@ h1 em{font-style:normal;color:var(--accent)}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
 .chip .dot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 1.5px var(--panel)}
 .chip .n{font-family:var(--mono);font-size:.7rem;opacity:.65}
-.summary{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.summary{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 12px;font-size:.85rem;color:var(--muted)}
 .summary b{color:var(--ink);font-variant-numeric:tabular-nums}
 .linkbtn{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font-weight:600;font-size:.85rem}
 .sortbar{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
@@ -198,7 +198,7 @@ h1 em{font-style:normal;color:var(--accent)}
         <input id="q" type="search" placeholder="Search bars, cocktails, ingredients" autocomplete="off" aria-label="Search bars, cocktails or ingredients">
       </label>
       <div class="summary">
-        <span><b id="count">0</b> of <b id="total">0</b> bars</span>
+        <span id="count" aria-live="polite"></span>
         <span style="display:flex;gap:14px">
           <button class="linkbtn collapse-toggle" id="toggleFilters" aria-expanded="false">Filters</button>
           <button class="linkbtn" id="reset" hidden>Clear filters</button>
@@ -490,7 +490,6 @@ function toggleSave(id) {
 
 // ---- list + filtering
 const listEl = document.getElementById("list");
-document.getElementById("total").textContent = VENUES.length;
 function matches(v) {
   if (state.tiers.size && !state.tiers.has(v.tier)) return false;
   if (state.areas.size && !state.areas.has(v.area)) return false;
@@ -528,7 +527,12 @@ let firstRender = true;
 function render({ refit = true } = {}) {
   const shown = VENUES.filter(matches);
   const dimming = cocktailFiltered();
-  document.getElementById("count").textContent = shown.length;
+  // e.g. "122 Signature + 17 Prestige"; once filtered, "4 of 122 Signature + 1 of 17 Prestige"
+  const tierCount = tier => {
+    const all = VENUES.filter(v => v.tier === tier).length, n = shown.filter(v => v.tier === tier).length;
+    return `<b>${n === all ? n : `${n}</b> of <b>${all}`}</b> ${tier === "prestige" ? "Prestige" : "Signature"}`;
+  };
+  document.getElementById("count").innerHTML = tierCount("signature") + " + " + tierCount("prestige");
   document.getElementById("reset").hidden = !anyFilter();
   refreshFilterButton();
   markerLayer.clearLayers();
