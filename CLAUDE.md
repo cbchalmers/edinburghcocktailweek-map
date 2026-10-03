@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 An unofficial interactive map of Edinburgh Cocktail Week 2026: the bars on the £6 Signature and £9 Prestige cocktail lists, plus the Cocktail Village. It's a static site with no build step and no package manager. It's deployed on Vercel at https://edinburghcocktailweek-map.vercel.app, and each push to `main` deploys to production.
 
+The repo is public at https://github.com/cbchalmers/edinburghcocktailweek-map. Its GitHub description, website link and topics are set with `gh repo edit`, not in files. Everything committed is public, so keep secrets, personal paths and local tooling config out of it; the local `.claude/` folder is excluded via `.git/info/exclude`.
+
 ## Commands
 
 ```bash
@@ -49,3 +51,9 @@ The whole app is `public/index.html`: inline CSS, then one inline script wrapped
 - Keep the "unofficial" wording.
 - Keep the link back to edinburghcocktailweek.co.uk.
 - Keep the OpenStreetMap attribution (ODbL).
+
+## Licensing
+
+The code is MIT (`LICENSE`, © Chris Chalmers). The MIT licence doesn't cover the data, and the README's Licence section says so; keep that distinction if the data or licence changes:
+- The bar and cocktail listings in `public/data/venues.json` and `scripts/geocache.json` come from Edinburgh Cocktail Week.
+- `public/data/basemap.json` is derived from OpenStreetMap and is under the ODbL.
