@@ -1,0 +1,417 @@
+{
+ "1802-lounge-and-bar-eh1-3af": {
+  "opening_hours": "Mo-Su 12:00-23:00",
+  "source": "https://www.marriott.com/en-gb/hotels/edicy-courtyard-edinburgh/dining/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "1802 Lounge & Terrace hours (Courtyard by Marriott Edinburgh); 1802 Grill serves 17:30-22:00"
+ },
+ "angels-share-eh2-4el": {
+  "opening_hours": "Su-We 08:00-23:00; Th 08:00-00:00; Fr,Sa 08:00-01:00",
+  "source": "https://www.angelssharehotel.com/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "arti-and-alba-eh8-8au": {
+  "opening_hours": "Mo-Su 12:00-22:30",
+  "source": "https://www.marriott.com/en-gb/hotels/edimh-edinburgh-marriott-hotel-holyrood/dining/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Arti & Alba Bar hours (Edinburgh Marriott Hotel Holyrood)"
+ },
+ "baba-eh2-4jz": {
+  "opening_hours": "Mo-Th 12:00-00:00; Fr,Sa 12:00-01:00; Su 12:00-00:00",
+  "source": "https://baba.restaurant/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Bar hours; restaurant 12:00-21:00 daily"
+ },
+ "bar-1819-eh1-3bg": {
+  "opening_hours": "Mo-Sa 09:00-01:00; Su 09:00-00:00",
+  "source": "https://www.apexhotels.co.uk/destinations/edinburgh/apex-waterloo-place-hotel/dining/bar-1819/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Apex Waterloo Place hotel page; older press coverage gave 8am opening and 11pm Sunday close"
+ },
+ "boom-battle-bar-eh1-3au": {
+  "opening_hours": "Mo-Th 12:00-23:00; Fr 12:00-00:00; Sa 11:00-00:00; Su 12:00-23:00",
+  "source": "https://www.boombattlebar.com/edinburgh",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "bread-street-kitchen-eh2-2bd": {
+  "opening_hours": "Mo-We 11:30-21:30; Th-Sa 11:30-22:00; Su 11:30-20:30",
+  "source": "https://www.gordonramsayrestaurants.com/bread-street-kitchen/edinburgh/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Single set of hours for bar and restaurant"
+ },
+ "brewdog-lothian-road-eh3-9by": {
+  "opening_hours": "Mo,Tu 12:00-23:00; We,Th 12:00-00:00; Fr,Sa 12:00-01:00; Su 12:00-23:00",
+  "source": "https://drink.brewdog.com/uk/brewdog-lothian-road",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "From the bar page's opening-hours data; kitchen closes earlier"
+ },
+ "brewhemia-eh1-1de": {
+  "opening_hours": "Mo,Tu 09:00-23:00; We,Th 09:00-00:00; Fr,Sa 09:00-01:00; Su 09:00-00:00",
+  "source": "https://brewhemia.co.uk/about/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "caru-by-candlelight-eh8-8fs": {
+  "opening_hours": "Mo-Fr 16:00-23:00; Sa 13:00-23:00; Su 16:00-23:00",
+  "source": "https://www.carubycandlelight.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "cc-blooms-eh1-3aa": {
+  "opening_hours": "Mo-Su 13:00-03:00",
+  "source": "https://www.firsttable.co.uk/edinburgh/new-town/cc-blooms",
+  "source_type": "third-party",
+  "checked": "2026-10-04",
+  "note": "Official site confirms open 7 nights until 03:00 but gives no opening time; 13:00 from First Table listing"
+ },
+ "contini-george-street-eh2-3es": {
+  "opening_hours": "Mo-Th 09:00-23:00; Fr 09:00-23:30; Sa 10:00-23:30; Su 10:00-23:00",
+  "source": "https://www.contini.com/contini-george-street/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Venue hours; food service is shorter (dinner ends 20:00-21:30)"
+ },
+ "dine-craiglockhart-eh14-1al": {
+  "opening_hours": "Mo-Su 10:00-00:00",
+  "source": "https://craiglockhart.scot/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "bar hours; food served lunch 12:00-16:00 and dinner 17:00-22:00, weekend brunch from 09:30"
+ },
+ "dine-eh1-2ed": {
+  "opening_hours": "Mo,Tu off; We-Su 12:00-16:30,17:00-23:00",
+  "source": "https://dineedinburgh.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Published lunch/dinner hours; no separate cocktail lounge hours given; last dinner sitting 21:00"
+ },
+ "dropkick-murphys-eh1-2qd": {
+  "opening_hours": "Mo-Th 19:00-03:00; Fr,Sa 17:00-03:00; Su 14:00-03:00",
+  "source": "https://www.dropkicksedinburgh.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "duck-and-waffle-eh1-3ae": {
+  "opening_hours": "Su-Th 10:00-22:00; Fr,Sa 10:00-00:00",
+  "source": "https://duckandwaffle.com/edinburgh/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Bar and lounge follow restaurant hours; last dinner sitting 20:00 (Fr,Sa 22:00)"
+ },
+ "element-eh2-3jf": {
+  "opening_hours": "Mo-Th 12:00-23:00; Fr 12:00-01:00; Sa 11:30-01:00; Su 11:30-23:00",
+  "source": "https://www.elementedinburgh.co.uk/element-edinburgh-opening-hours/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Bar hours; kitchen closes 21:00. Some third-party listings show later Thu/Sun closing"
+ },
+ "elios-eh2-2le": {
+  "opening_hours": "Su-Th 15:00-03:00; Fr 14:00-03:00; Sa 12:00-03:00",
+  "source": "https://eliosedinburgh.com",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "encore-eh2-4db": {
+  "opening_hours": "Mo,Tu off; We-Fr 17:00-01:00; Sa 12:00-01:00; Su 17:00-01:00",
+  "source": "https://www.encoreedinburgh.com/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "folly-spirit-labs-eh1-3at": {
+  "opening_hours": "Tu-Sa 16:00-01:00; Su,Mo off",
+  "source": "https://www.diffordsguide.com/bars/9lv6xz/folly-spirit-labs",
+  "source_type": "third-party",
+  "checked": "2026-10-04",
+  "note": "Own website lists no hours; listing undated"
+ },
+ "grand-cafe-eh1-1tr-prestige": {
+  "opening_hours": "Mo-Th 10:00-23:00; Fr 10:00-00:00; Sa 09:00-00:00; Su 09:00-23:00",
+  "source": "https://scotsmanhotel.co.uk/dine-drink/the-grand-cafe/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Kitchen closes 22:00"
+ },
+ "harrods-champagne-bar-eh1-3ae": {
+  "opening_hours": "Mo-Fr 11:00-19:00; Sa 10:00-19:00; Su 11:00-17:00",
+  "source": "https://www.harrods.com/en-gb/c/h-beauty/edinburgh",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Champagne Bar hours inside H beauty; store itself is open longer"
+ },
+ "hey-palu-eh3-9ah-prestige": {
+  "opening_hours": "Mo-Su 16:00-01:00",
+  "source": "https://www.heypalu.com/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Some listings show 17:00 opening Mon-Fri and midnight close Sun-Thu"
+ },
+ "indigo-yard-eh2-4qz": {
+  "opening_hours": "Mo-Su 10:00-01:00",
+  "source": "https://www.indigoyardedinburgh.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "breakfast served Sat and Sun only"
+ },
+ "joaos-place-eh1-3ax-prestige": {
+  "opening_hours": "Mo,Tu off; We,Th 17:00-23:00; Fr 17:00-01:00; Sa 15:00-01:00; Su 17:00-23:00",
+  "source": "https://www.marriott.com/en-gb/hotels/ediwh-w-edinburgh/dining",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "W Edinburgh hotel page; some third-party listings show We-Su 17:00-03:00"
+ },
+ "kaleidoscope-bar-eh2-1jx": {
+  "opening_hours": "Mo off; Tu,We 12:00-23:00; Th-Sa 12:00-00:00; Su 12:00-22:00",
+  "source": "https://smws.com/venues/28-queen-street",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "kome-izakaya-eh3-9js": {
+  "opening_hours": "Tu-Th 17:00-23:00; Fr,Sa 15:00-23:00",
+  "source": "https://www.komeizakaya.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Site lists Tuesday to Saturday only; Sunday and Monday not listed"
+ },
+ "lady-libertine-eh2-2aa-prestige": {
+  "opening_hours": "Mo-Th 12:00-00:00; Fr 12:00-01:00; Sa 10:30-01:00; Su 10:30-00:00",
+  "source": "https://list.co.uk/eat-drink/lady-libertine-145",
+  "source_type": "third-party",
+  "checked": "2026-10-04",
+  "note": "Official site blocked automated access; listing undated. Food until 22:00"
+ },
+ "le-monde-eh2-2pf": {
+  "opening_hours": "Mo-Th 08:00-00:00; Fr,Sa 08:00-01:00; Su 08:00-00:00",
+  "source": "https://lemondehotel.co.uk/contact/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Bar & restaurant hours; outdoor terrace closes 22:00"
+ },
+ "lochrin-rooftop-bar-eh3-9fr": {
+  "opening_hours": "Mo-Th 17:00-23:00; Fr,Sa 16:00-00:00; Su 17:00-23:00",
+  "source": "https://www.lochrinrooftop.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "maggie-dicksons-eh1-2jr": {
+  "opening_hours": "Mo-Su 11:00-01:00",
+  "source": "https://maggiedicksons.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "malmaison-leith-eh6-7bz": {
+  "opening_hours": "Mo-Su 12:00-23:00",
+  "source": "https://www.malmaison.com/locations/edinburgh/chez-mal-brasserie-bar/chez-mal-bar/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Chez Mal Bar hours"
+ },
+ "malones-eh3-8dt": {
+  "opening_hours": "Mo-Su 11:00-01:00",
+  "source": "https://malonesedinburgh.com/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Venue says times may change for specific events"
+ },
+ "metro-bar-and-brasserie-at-apex-grassmarket-hotel-eh1-2hs": {
+  "opening_hours": "Mo-Su 07:00-20:45",
+  "source": "https://www.apexhotels.co.uk/destinations/edinburgh/restaurants/metro/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "hours published for Metro as a whole; no separate bar hours given"
+ },
+ "no-1-high-street-eh1-1sr": {
+  "opening_hours": "Su-We 11:00-00:00; Th-Sa 11:00-01:00",
+  "source": "https://edinburghguide.com/venues/pubs/no-1-high-street",
+  "source_type": "third-party",
+  "checked": "2026-10-04",
+  "note": "Own website lists no hours; listing undated"
+ },
+ "nor-loft-eh1-1de-prestige": {
+  "opening_hours": "Mo-Th 12:00-23:00; Fr,Sa 12:00-00:00; Su 12:00-23:00",
+  "source": "https://www.norloft.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Lounge hours; last orders 30 min before close"
+ },
+ "old-pal-bar-and-kitchen-eh12-5dx-prestige": {
+  "opening_hours": "Mo 16:00-00:00; Tu-Sa 12:00-00:00; Su 12:00-23:00",
+  "source": "https://www.opentable.co.uk/restaurant/profile/418530",
+  "source_type": "third-party",
+  "checked": "2026-10-04",
+  "note": "No official website found; hours from the venue's OpenTable listing (seen via search index, page timed out on direct fetch)"
+ },
+ "one-square-bar-eh3-9sr": {
+  "opening_hours": "Mo-Su 10:00-00:00",
+  "source": "https://www.onesquareedinburgh.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Last food order 22:30; another line on the page says 7 AM to 12AM"
+ },
+ "ox184-eh1-1jj": {
+  "opening_hours": "Mo-Fr 16:00-03:00; Sa 12:00-03:00; Su 16:00-03:00",
+  "source": "https://www.ox184.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Kitchen till 02:00 We-Su, till 00:00 Mo-Tu"
+ },
+ "rabble-eh2-1lh": {
+  "opening_hours": "Mo-Su 09:00-01:00",
+  "source": "https://www.rabbleedinburgh.co.uk/contact-us/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "rosas-thai-eh2-1ep": {
+  "opening_hours": "Mo-Th 12:00-22:00; Fr,Sa 12:00-22:30; Su 12:00-22:00",
+  "source": "https://rosasthai.com/locations/edinburgh",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Restaurant hours"
+ },
+ "the-alchemist-george-street-eh2-2ht": {
+  "opening_hours": "Mo-We 12:00-00:00; Th,Fr 12:00-01:00; Sa 10:00-01:00; Su 11:00-00:00",
+  "source": "https://www.designmynight.com/edinburgh/bars/city-centre/the-alchemist-edinburgh-george-street",
+  "source_type": "third-party",
+  "checked": "2026-10-04",
+  "note": "Official Alchemist site blocks automated access; hours from the venue's DesignMyNight booking page"
+ },
+ "the-alchemist-st-james-quarter-eh1-3ae": {
+  "opening_hours": "Mo-We 10:00-00:00; Th 10:00-01:00; Fr 10:00-23:00; Sa 10:00-01:00; Su 10:00-00:00",
+  "source": "https://www.designmynight.com/edinburgh/bars/new-town/the-alchemist-edinburgh-st-james-quarter",
+  "source_type": "third-party",
+  "checked": "2026-10-04",
+  "note": "Official Alchemist site blocked by Cloudflare; Friday 23:00 close as listed on DesignMyNight looks anomalous"
+ },
+ "the-basement-eh1-3rh": {
+  "opening_hours": "Mo 12:00-23:00; Tu-Th 12:00-00:00; Fr,Sa 12:00-01:00; Su 11:00-00:00",
+  "source": "https://www.firsttable.co.uk/edinburgh/new-town/the-basement",
+  "source_type": "third-party",
+  "checked": "2026-10-04",
+  "note": "No working official website found; from the venue's First Table booking page"
+ },
+ "the-boozy-cow-eh2-2ey": {
+  "opening_hours": "Mo-Fr 11:00-00:00; Sa,Su 11:00-01:00",
+  "source": "https://www.boozycow.com/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Kitchen closes 23:00"
+ },
+ "the-botanist-edinburgh-eh1-3ar": {
+  "opening_hours": "Mo-We 11:00-22:00; Th 11:00-23:00; Fr,Sa 11:00-01:00; Su 11:00-23:00",
+  "source": "https://www.thebotanist.uk.com/locations/edinburgh",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "the-burrow-eh1-1nb-prestige": {
+  "opening_hours": "Th 16:00-23:00; Fr,Sa 16:00-00:00; Su 15:00-22:00; Mo-We off",
+  "source": "https://www.theburrowbar.com/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "the-glasshouse-hotel-snug-bar-eh1-3aa": {
+  "opening_hours": "Mo-Th 12:00-23:00; Fr,Sa 12:00-00:00; Su 12:00-23:00",
+  "source": "https://www.marriott.com/en-us/hotels/ediak-the-glasshouse-autograph-collection/dining/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Snug Bar & Lounge on the hotel's Marriott dining page; OpenTable lists 12:00-21:30"
+ },
+ "the-huxley-eh1-2ae": {
+  "opening_hours": "Su-Th 08:00-23:00; Fr,Sa 08:00-00:00",
+  "source": "https://thehuxley.co.uk/opening-times/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Kitchen 08:00-22:00"
+ },
+ "the-lighthouse-bar-eh6-7dx-prestige": {
+  "opening_hours": "Mo-Su 12:00-21:00",
+  "source": "https://www.fingal.co.uk/food-drink/cocktails",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "hours for non-residents; advance reservation required"
+ },
+ "the-queens-arms-eh2-1ep": {
+  "opening_hours": "Mo-Fr 12:00-01:00; Sa,Su 11:30-01:00",
+  "source": "https://queensarmsedinburgh.com/opening-times/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Kitchen closes 22:00"
+ },
+ "the-red-squirrel-eh1-2dj": {
+  "opening_hours": "Mo-We 10:00-23:00; Th-Sa 10:00-00:00; Su 10:00-23:00",
+  "source": "https://www.redsquirreledinburgh.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "the-scotch-malt-whisky-society-the-vaults-eh6-6bz": {
+  "opening_hours": "Mo off; Tu,We 11:00-23:00; Th-Sa 11:00-00:00; Su 12:30-22:00",
+  "source": "https://smws.com/venues/the-vaults",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Kitchen closed 15:00-16:00 daily"
+ },
+ "the-spanish-butcher-eh2-3lu": {
+  "opening_hours": "Mo-Th 12:00-23:00; Fr,Sa 12:00-00:00; Su 12:00-23:00",
+  "source": "https://spanishbutcher.com/edinburgh",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Last reservations around 20:30-21:30"
+ },
+ "tigerlily-eh2-4jn": {
+  "opening_hours": "Mo-Su 08:00-01:00",
+  "source": "https://tigerlilyedinburgh.co.uk/contact-us/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "tonic-eh2-3bn": {
+  "opening_hours": "Mo-Fr 17:00-01:00; Sa 12:00-01:00; Su 17:00-01:00",
+  "source": "https://www.bar-tonic.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "understory-eh1-2ad": {
+  "opening_hours": "Mo-Th 17:00-01:00; Fr,Sa 17:00-03:00; Su 17:00-01:00",
+  "source": "https://www.understorybar.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "Opening press coverage said 4pm; official site now says 5pm"
+ },
+ "vessel-eh2-1ee": {
+  "opening_hours": "Mo off; Tu 16:00-22:00; We 12:00-22:00; Th-Sa 12:00-00:00; Su 12:00-22:00",
+  "source": "https://www.firsttable.co.uk/edinburgh/edinburgh-central/vessel-bars",
+  "source_type": "third-party",
+  "checked": "2026-10-04",
+  "note": "Official site (vesselbars.co.uk) lists no hours"
+ },
+ "vivien-eh3-6ny-prestige": {
+  "opening_hours": "We,Th,Su 17:30-23:00; Fr,Sa 17:30-00:00; Mo,Tu off",
+  "source": "https://www.vivienedinburgh.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "w-lounge-eh1-3ax-prestige": {
+  "opening_hours": "Mo-Su 11:00-00:00",
+  "source": "https://www.marriott.com/en-gb/hotels/ediwh-w-edinburgh/dining/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ },
+ "whighams-wine-cellars-eh2-4el": {
+  "opening_hours": "Mo-We 12:00-23:00; Th-Sa 12:00-00:00; Su 12:00-22:00",
+  "source": "https://www.whighams.com/",
+  "source_type": "official",
+  "checked": "2026-10-04",
+  "note": "kitchen open to 21:00 daily"
+ },
+ "whiski-rooms-eh1-2lp": {
+  "opening_hours": "Mo-Su 10:00-01:00",
+  "source": "https://www.whiskirooms.co.uk/",
+  "source_type": "official",
+  "checked": "2026-10-04"
+ }
+}

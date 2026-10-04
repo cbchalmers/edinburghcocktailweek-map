@@ -18,7 +18,7 @@
   --accent:#a8234f; --accent-ink:#ffffff; --accent-soft:#f6e3ea;
   --land:#ece7e1; --road:#ffffff; --road-major:#f5d9a8; --road-casing:#d8cfc6; --path:#e6dcd2;
   --park:#d5e3c4; --water:#b9d3e0; --rail:#b8aeb0; --label:#6b5f63; --label-halo:#ece7e1;
-  --gold:#b8892b; --me:#1a73e8;
+  --gold:#b8892b; --me:#1a73e8; --open:#1e8a4c; --soon:#b8740f;
   --display:"Young Serif",Georgia,"Times New Roman",serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -29,14 +29,14 @@
   --accent:#ff6f9a; --accent-ink:#1b0f15; --accent-soft:#3a2130;
   --land:#211c25; --road:#3a3340; --road-major:#6a5440; --road-casing:#2a2430; --path:#2f2934;
   --park:#26332a; --water:#1d3140; --rail:#4d4552; --label:#a99dab; --label-halo:#211c25;
-  --gold:#e2b552; --me:#5ea1ff;
+  --gold:#e2b552; --me:#5ea1ff; --open:#4cc27e; --soon:#f0a640;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#17131a; --panel:#1e1922; --ink:#f1eaef; --muted:#a698a6; --line:#342c38;
   --accent:#ff6f9a; --accent-ink:#1b0f15; --accent-soft:#3a2130;
   --land:#211c25; --road:#3a3340; --road-major:#6a5440; --road-casing:#2a2430; --path:#2f2934;
   --park:#26332a; --water:#1d3140; --rail:#4d4552; --label:#a99dab; --label-halo:#211c25;
-  --gold:#e2b552; --me:#5ea1ff;
+  --gold:#e2b552; --me:#5ea1ff; --open:#4cc27e; --soon:#f0a640;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45); color-scheme:dark}
 
 html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
@@ -57,6 +57,10 @@ h1{font-family:var(--display);font-weight:400;font-size:1.5rem;line-height:1.1;m
 h1 em{font-style:normal;color:var(--accent)}
 .source{margin:4px 0 0;font-size:.8rem;color:var(--muted)}
 .source a{color:var(--accent);font-weight:600}
+.source + .source{margin-top:2px}
+.coffee{display:inline-flex;align-items:center;gap:5px;text-decoration:none}
+.coffee:hover{text-decoration:underline}
+.coffee svg{width:15px;height:15px}
 .list{overscroll-behavior:contain}
 #map{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 .pin-hit{display:grid;place-items:center;cursor:pointer;background:none;border:0}
@@ -107,6 +111,46 @@ h1 em{font-style:normal;color:var(--accent)}
 .dist{font-size:.78rem;color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
 .dist .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:0}
 .ck .dim{opacity:.45}
+.ckrow{display:grid;grid-template-columns:1fr;gap:10px;align-items:start}
+.ckrow.has-thumb{grid-template-columns:64px 1fr}
+.cktext{min-width:0}
+.thumb{width:64px;height:84px;object-fit:cover;border-radius:8px;background:var(--line);display:block}
+.pop-photo{margin:0 -16px 8px;height:170px;overflow:hidden;background:var(--line)}
+.pop-ck:first-of-type .pop-photo{margin-top:6px}
+.pop-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.pop-ck+.pop-ck .pop-photo{margin-top:4px}
+.hours{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:2px}
+.hours .hdot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:none}
+.hours.open{color:var(--open);font-weight:600}.hours.open .hdot{background:var(--open)}
+.hours.soon{color:var(--soon);font-weight:600}.hours.soon .hdot{background:var(--soon)}
+.hours.unknown{font-style:italic}
+.pop-hours{margin:2px 0 6px}
+.pop-hours summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px}
+.pop-hours summary::-webkit-details-marker{display:none}
+.pop-hours summary::after{content:"Hours ▾";font-size:.72rem;color:var(--accent);font-weight:600;margin-left:auto}
+.pop-hours[open] summary::after{content:"Hours ▴"}
+.week{border-collapse:collapse;font-size:.78rem;margin:6px 0 4px;width:100%;font-variant-numeric:tabular-nums}
+.week th{text-align:left;font-weight:600;padding:1px 10px 1px 0;color:var(--muted);width:3em}
+.week td{padding:1px 0}
+.week tr.today th,.week tr.today td{color:var(--ink);font-weight:700}
+.hsrc,.hnote{font-size:.72rem;color:var(--muted);margin:4px 0 0}
+.hsrc a{color:inherit}
+.venue-label{pointer-events:none!important;white-space:nowrap}
+.venue-label span{position:absolute;top:0;transform:translate(10px,-50%);font-size:11.5px;font-weight:600;color:var(--ink);text-shadow:0 0 3px var(--land),0 0 3px var(--land),0 0 3px var(--land),0 0 1px var(--land)}
+.venue-label.l span{transform:translate(calc(-100% - 10px),-50%)}
+.compass-btn,.max-btn{width:30px;height:30px;display:grid!important;place-items:center;cursor:pointer}
+.compass-btn svg{width:22px;height:22px;transition:transform .15s}
+.max-btn svg{width:18px;height:18px}
+.listbar{border-bottom:1px solid var(--line)}
+.listbar #toggleList{flex:1;display:flex;align-items:center;gap:8px;background:none;border:0;padding:8px 20px;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;text-align:left}
+.listbar #toggleList:hover{color:var(--ink)}
+.listbar svg{width:16px;height:16px;transition:transform .15s}
+.list-collapsed .listbar svg{transform:rotate(180deg)}
+.list-collapsed .list{display:none}
+.list-collapsed .head{max-height:none}
+:root .app.map-max{grid-template-columns:1fr;grid-template-rows:1fr}
+:root .app.map-max .rail{display:none}
+:root .app.map-max .mapwrap{grid-row:1;grid-column:1}
 .village-card{margin:10px 20px 6px;padding:12px 14px;border-radius:12px;background:var(--accent-soft);cursor:pointer;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:start}
 .village-card .vi{grid-row:1/4;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink)}
 .village-card .vi svg{width:20px;height:20px}
@@ -121,6 +165,14 @@ h1 em{font-style:normal;color:var(--accent)}
 .list{flex:1;overflow-y:auto;min-height:0;padding:6px 0 24px}
 .area-h{position:sticky;top:0;z-index:1;background:var(--panel);padding:12px 20px 6px;font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
 .area-h .dot{width:9px;height:9px;border-radius:50%}
+button.area-h{width:100%;border:0;border-bottom:1px solid var(--line);font:inherit;font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;text-align:left;padding-block:12px}
+button.area-h:hover:not(:disabled){color:var(--ink)}
+button.area-h:disabled{cursor:default;color:var(--muted)}
+.area-h .chev{width:15px;height:15px;margin-left:auto;transition:transform .15s}
+.area-h[aria-expanded="true"] .chev{transform:rotate(180deg)}
+button.area-h:disabled .chev{display:none}
+.listbar{display:flex;align-items:center}
+.areas-all{background:none;border:0;padding:8px 20px;font-size:.8rem;font-weight:600;color:var(--accent);cursor:pointer;white-space:nowrap}
 .venue{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:12px 20px;border-bottom:1px solid var(--line);cursor:pointer}
 .venue:hover{background:var(--bg)}
 .venue.active{background:var(--accent-soft)}
@@ -169,11 +221,14 @@ h1 em{font-style:normal;color:var(--accent)}
 .legend-key .pin{width:9px;height:9px}
 
 @media (max-width:760px){
-  .app{grid-template-columns:1fr;grid-template-rows:auto 42% 1fr;height:100%}
+  .app{grid-template-columns:1fr;grid-template-rows:auto 42% auto 1fr;height:100%}
+  .app.list-collapsed{grid-template-rows:auto 1fr auto 0}
+  .listbar{grid-row:3;background:var(--panel)}
+  .listbar button{padding-inline:16px}
   .rail{display:contents}
   .head{grid-row:1;background:var(--panel);padding:12px 16px 10px;gap:10px;max-height:60vh;overflow-y:auto}
   .mapwrap{grid-row:2;border-block:1px solid var(--line)}
-  .list{grid-row:3;background:var(--panel)}
+  .list{grid-row:4;background:var(--panel)}
   .foot{display:none}
   .venue,.area-h{padding-inline:16px}
   .village-card{margin-inline:16px}
@@ -191,6 +246,7 @@ h1 em{font-style:normal;color:var(--accent)}
         <div>
           <h1>Edinburgh Cocktail Week <em>2026 Venues</em></h1>
           <p class="source">Unofficial map. Data from <a href="https://www.edinburghcocktailweek.co.uk" target="_blank" rel="noopener">edinburghcocktailweek.co.uk</a></p>
+          <p class="source"><a class="coffee" href="https://buymeacoffee.com/cbchalmers" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2.5v2.5M12 2.5v2.5"/></svg>Found it useful? Buy me a coffee</a></p>
         </div>
       </div>
       <label class="search" for="q">
@@ -219,8 +275,9 @@ h1 em{font-style:normal;color:var(--accent)}
         <div class="fgroup"><span class="flabel">Must have</span><div class="chips" id="feats"></div></div>
       </div>
     </div>
+    <div class="listbar"><button type="button" id="toggleList" aria-expanded="true" aria-controls="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><span>Hide bar list</span></button><button type="button" id="toggleAreas" class="areas-all">Expand all</button></div>
     <div class="list" id="list" aria-live="polite"></div>
-    <div class="foot">2026 bars and cocktails from the official <a href="https://www.edinburghcocktailweek.co.uk/signature-cocktails" target="_blank" rel="noopener">Signature</a> and <a href="https://www.edinburghcocktailweek.co.uk/prestige-cocktails" target="_blank" rel="noopener">Prestige</a> lists, read <span id="updated">3 Oct 2026</span>. Ingredient filters go by the listed ingredients, so check with the bar if it matters. Pins are placed from the listed addresses, so check before you walk. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.</div>
+    <div class="foot">2026 bars and cocktails from the official <a href="https://www.edinburghcocktailweek.co.uk/signature-cocktails" target="_blank" rel="noopener">Signature</a> and <a href="https://www.edinburghcocktailweek.co.uk/prestige-cocktails" target="_blank" rel="noopener">Prestige</a> lists, read <span id="updated">3 Oct 2026</span>. Cocktail photos © Edinburgh Cocktail Week. Opening hours come from each bar's website or OpenStreetMap and can change during the festival. Ingredient filters go by the listed ingredients, so check with the bar if it matters. Pins are placed from the listed addresses, so check before you walk. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors. Made by Chris Chalmers. If it helped your night out, you can <a href="https://buymeacoffee.com/cbchalmers" target="_blank" rel="noopener">buy me a coffee</a>.</div>
   </aside>
   <div class="mapwrap">
     <div id="map" role="application" aria-label="Map of participating bars"></div>
@@ -233,6 +290,7 @@ h1 em{font-style:normal;color:var(--accent)}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
 <script>
 (async () => {
 const [DATA, BASE] = await Promise.all(["data/venues.json", "data/basemap.json"].map(u => fetch(u, { cache: "no-cache" }).then(r => r.json()))); // revalidate so page and data never mismatch
@@ -348,10 +406,13 @@ function refreshSavedCount() { savedChip.querySelector(".n").textContent = saved
 refreshSavedCount();
 
 // ---- map
-const map = L.map("map", { zoomControl: true, minZoom: 12, maxZoom: 18, preferCanvas: true, attributionControl: true,
+const map = L.map("map", { zoomControl: true, minZoom: 12, maxZoom: 19, preferCanvas: true, attributionControl: true,
+  // leaflet-rotate: two-finger twist on touch screens, Shift + drag on desktop; our own compass control resets north
+  rotate: true, bearing: 0, touchRotate: true, shiftKeyRotate: true, rotateControl: false,
   maxBounds: [[55.89, -3.32], [56.02, -3.08]], maxBoundsViscosity: 0.8, zoomSnap: 0.5 });
 map.attributionControl.setPrefix(false).addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>');
 
+if (location.hostname === "localhost") window.ecwMap = map; // handy for poking at the map from the console locally
 const renderer = L.canvas({ padding: 0.2 });
 const decode = arr => { const out = []; let a = 0, b = 0; for (let i = 0; i < arr.length; i += 2) { a += arr[i]; b += arr[i + 1]; out.push([a / 1e5, b / 1e5]); } return out; };
 const geo = Object.fromEntries(Object.entries(BASE.layers).map(([k, v]) => [k, v.map(decode)]));
@@ -387,10 +448,14 @@ function styleBase() {
 }
 
 // street + district labels
-map.createPane("labels").style.zIndex = 450; // above roads, below pins
+// leaflet-rotate keeps pins and popups upright in its "norotatePane"; our label panes go there too so they stack under them
+const LABEL_PARENT = map.getPane("norotatePane") || map.getPane("mapPane");
+map.createPane("labels", LABEL_PARENT).style.zIndex = 450; // above roads, below pins
 map.getPane("labels").style.pointerEvents = "none";
 const labelLayer = L.layerGroup().addTo(map);
 const DISTRICTS = [["New Town",55.9555,-3.1985],["Old Town",55.9495,-3.1895],["Leith",55.9715,-3.1715],["Stockbridge",55.9585,-3.2105],["Broughton",55.9605,-3.1885],["Tollcross",55.9435,-3.2045],["Bruntsfield",55.9375,-3.2085],["Canonmills",55.9640,-3.2010],["Haymarket",55.9455,-3.2195],["Southside",55.9440,-3.1825],["Morningside",55.9290,-3.2095]];
+// Street names are drawn along the street; when the map is rotated, add the bearing and keep the text upright.
+const uprightAngle = ang => { let a = ang + (map.getBearing ? map.getBearing() : 0); a = ((a + 180) % 360 + 360) % 360 - 180; return a > 90 ? a - 180 : a < -90 ? a + 180 : a; };
 function updateLabels() {
   labelLayer.clearLayers();
   const z = map.getZoom(), b = map.getBounds().pad(0.1);
@@ -402,9 +467,105 @@ function updateLabels() {
   BASE.labels.forEach(([n, la, lo, r, ang]) => {
     if (r < minRank || !b.contains([la, lo])) return;
     labelLayer.addLayer(L.marker([la, lo], { pane: "labels", interactive: false, keyboard: false,
-      icon: L.divIcon({ className: "st-label r" + r, html: `<span style="transform:translate(-50%,-50%) rotate(${ang}deg)">${esc(n)}</span>`, iconSize: [0, 0] }) }));
+      icon: L.divIcon({ className: "st-label r" + r, html: `<span style="transform:translate(-50%,-50%) rotate(${uprightAngle(ang)}deg)">${esc(n)}</span>`, iconSize: [0, 0] }) }));
   });
 }
+
+// ---- bar names on the map when zoomed in; placed right (or left) of each pin, skipping any that would overlap
+map.createPane("venueLabels", LABEL_PARENT).style.zIndex = 590; // just below the pins
+map.getPane("venueLabels").style.pointerEvents = "none";
+const nameLayer = L.layerGroup().addTo(map);
+const NAME_ZOOM = 16;
+const measureCtx = document.createElement("canvas").getContext("2d");
+let currentShown = [];
+function updateNames() {
+  nameLayer.clearLayers();
+  if (map.getZoom() < NAME_ZOOM) return;
+  measureCtx.font = "600 11.5px Figtree, system-ui, sans-serif";
+  const size = map.getSize();
+  const rank = v => (v.id === activeId ? 8 : 0) + (saved.has(v.id) ? 4 : 0) + (v.tier === "prestige" ? 2 : 0);
+  const order = currentShown.slice().sort((a, b) => rank(b) - rank(a) || a.name.localeCompare(b.name));
+  const pts = new Map(order.map(v => [v.id, map.latLngToContainerPoint([v.lat, v.lng])]));
+  const taken = [...pts.values()].map(p => [p.x - 8, p.y - 8, p.x + 8, p.y + 8]); // labels never cover a pin
+  const hits = b => taken.some(o => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]);
+  for (const v of order) {
+    const p = pts.get(v.id);
+    if (p.x < -150 || p.y < -20 || p.x > size.x + 150 || p.y > size.y + 20) continue;
+    const label = titleCase(v.name), w = measureCtx.measureText(label).width + 6, h = 16;
+    for (const side of ["r", "l"]) {
+      const x0 = side === "r" ? p.x + 10 : p.x - 10 - w, box = [x0, p.y - h / 2, x0 + w, p.y + h / 2];
+      if (hits(box)) continue;
+      taken.push(box);
+      nameLayer.addLayer(L.marker([v.lat, v.lng], { pane: "venueLabels", interactive: false, keyboard: false,
+        icon: L.divIcon({ className: "venue-label " + side, html: `<span>${esc(label)}</span>`, iconSize: [0, 0] }) }));
+      break;
+    }
+  }
+}
+
+// ---- opening hours (always Edinburgh time, wherever the viewer is)
+const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const londonFmt = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", weekday: "short", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+function londonNow() {
+  const p = Object.fromEntries(londonFmt.formatToParts(new Date()).map(x => [x.type, x.value]));
+  return { day: DAY_NAMES.indexOf(p.weekday), mins: +p.hour * 60 + +p.minute, date: `${p.year}-${p.month}-${p.day}` };
+}
+const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+function fmtTime(m) {
+  m %= 1440;
+  if (m === 0) return "midnight";
+  if (m === 720) return "noon";
+  const h = Math.floor(m / 60), mm = m % 60;
+  return `${h % 12 || 12}${mm ? ":" + String(mm).padStart(2, "0") : ""}${h < 12 ? "am" : "pm"}`;
+}
+// week: 7 lists (Mon..Sun) of [open, close] minutes; close may pass 1440 for after midnight.
+// A day can be null when the bar's own listing doesn't give hours for it ("not listed", not "closed").
+// range (optional): {start, end} ISO dates outside which the place is closed (the Cocktail Village).
+function hoursStatus(week, range) {
+  const now = londonNow(), inRange = d => !range || (d >= range.start && d <= range.end);
+  const prev = (now.day + 6) % 7;
+  if (inRange(addDays(now.date, -1))) for (const [, c] of week[prev] || []) if (c > 1440 && now.mins < c - 1440) return { open: true, until: c - 1440, now };
+  if (week[now.day] === null) return { unknownToday: true, now };
+  if (inRange(now.date)) for (const [o, c] of week[now.day]) if (now.mins >= o && now.mins < c) return { open: true, until: c, now };
+  for (let k = 0; k <= 7; k++) {
+    const d = (now.day + k) % 7, date = addDays(now.date, k);
+    if (!inRange(date)) continue;
+    if (week[d] === null) return { open: false, now }; // next day's hours aren't listed
+    const next = week[d].find(([o]) => k > 0 || o > now.mins);
+    if (next) return { open: false, next: next[0], inDays: k, day: d, date, now };
+  }
+  return { open: false, finished: range && now.date > range.end, now };
+}
+function statusLabel(s) {
+  if (s.unknownToday) return ["Today's hours not listed", "unknown"];
+  if (s.open) return s.until - s.now.mins <= 60 && s.until - s.now.mins > 0 ? [`Closes soon · ${fmtTime(s.until)}`, "soon"] : [`Open · until ${fmtTime(s.until)}`, "open"];
+  if (s.finished) return ["Finished for 2026", "closed"];
+  if (s.next == null) return ["Closed", "closed"];
+  const when = s.inDays === 0 ? "" : s.inDays === 1 ? "tomorrow " : s.inDays < 7 ? DAY_NAMES[s.day] + " " : new Date(s.date + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) + ", ";
+  return [`Closed · opens ${when}${fmtTime(s.next)}`, "closed"];
+}
+function hoursLine(h, range) {
+  if (!h) return `<div class="hours unknown">Hours not listed</div>`;
+  if (!h.week) return `<div class="hours unknown">${esc(h.text)}</div>`;
+  const [label, cls] = statusLabel(hoursStatus(h.week, range));
+  return `<div class="hours ${cls}"><span class="hdot"></span>${label}</div>`;
+}
+function weekTable(week) {
+  const today = londonNow().day;
+  return `<table class="week">${week.map((spans, i) => `<tr${i === today ? ' class="today"' : ""}><th>${DAY_NAMES[i]}</th><td>${spans === null ? "Not listed" : spans.length ? spans.map(([o, c]) => `${fmtTime(o)}–${fmtTime(c)}`).join(", ") : "Closed"}</td></tr>`).join("")}</table>`;
+}
+function hoursDetails(h) {
+  if (!h) return `<div class="pop-hours">${hoursLine(h)}</div>`;
+  const checked = h.checked ? `, checked ${new Date(h.checked + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : "";
+  const src = h.source === "osm" ? `OpenStreetMap` : h.official === false ? `a venue listing` : `the bar's website`;
+  return `<details class="pop-hours"><summary>${hoursLine(h)}</summary>
+    ${h.week ? weekTable(h.week) : ""}
+    ${h.note ? `<p class="hnote">${esc(h.note)}</p>` : ""}
+    <p class="hsrc">From ${h.url ? `<a href="${esc(h.url)}" target="_blank" rel="noopener">${src}</a>` : src}${checked}. Hours can change during the festival.</p></details>`;
+}
+
+// ---- cocktail photos (served from ECW's image CDN, sized with ?format=)
+const photoUrl = (u, w) => u ? `${u}?format=${w}w` : "";
 
 // ---- distance from the viewer
 let me = null;              // L.LatLng once located
@@ -425,6 +586,7 @@ const markers = new Map(VENUES.map(v => {
     icon: L.divIcon({ className: "pin-hit", html: `<span class="pin${v.tier === "prestige" ? " prestige" : ""}" style="--c:${v.color}"></span>`, iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -8] }) });
   if (canHover) m.bindTooltip(titleCase(v.name) + (v.tier === "prestige" ? " · £9" : ""), { direction: "top", offset: [0, -10] });
   m.bindPopup(() => popupHtml(v), { autoPanPadding: [30, 30], maxWidth: 300 });
+  m.venueId = v.id;
   m.on("add", () => { setActive(m, v.id === activeId); markSaved(v.id); });
   m.on("click", () => select(v.id, { fromMap: true }));
   m.on("popupclose", () => { if (activeId === v.id) select(null); });
@@ -445,15 +607,19 @@ markers.set(VILLAGE_ID, villageMarker);
 const directionsUrl = (name, address) => "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(name + ", " + address + ", Edinburgh") + "&travelmode=walking";
 const tierBadge = v => v.tier === "prestige" ? `<span class="tier">£9 Prestige</span>` : "";
 const distLine = p => { const d = distTo(p); return d == null ? "" : `<div class="dist">${fmtDist(d)}</div>`; };
-function cocktailHtml(c, dim, withTitles) {
-  return `<div class="${dim ? "dim" : ""}"><div class="cname">${esc(titleCase(c.name))}</div><div class="cing">${esc(c.ingredients)}</div>
-    ${c.tags.length ? `<div class="tags">${c.tags.map(t => `<span class="tag"${withTitles ? ` title="${esc(FEATS.find(f => f[0] === t)?.[1] || t)}"` : ""}>${t}</span>`).join("")}</div>` : ""}</div>`;
+function cocktailHtml(c, dim, inPopup) {
+  const name = esc(titleCase(c.name));
+  const photo = !c.photo ? "" : inPopup
+    ? `<figure class="pop-photo"><img src="${photoUrl(c.photo, 500)}" alt="${name}" decoding="async" onerror="this.parentNode.remove()"></figure>`
+    : `<img class="thumb" src="${photoUrl(c.photo, 300)}" alt="" width="64" height="84" loading="lazy" decoding="async" onerror="this.remove()">`;
+  return `<div class="ckrow${dim ? " dim" : ""}${c.photo && !inPopup ? " has-thumb" : ""}">${photo}<div class="cktext"><div class="cname">${name}</div><div class="cing">${esc(c.ingredients)}</div>
+    ${c.tags.length ? `<div class="tags">${c.tags.map(t => `<span class="tag"${inPopup ? ` title="${esc(FEATS.find(f => f[0] === t)?.[1] || t)}"` : ""}>${t}</span>`).join("")}</div>` : ""}</div></div>`;
 }
 function popupHtml(v) {
   const dimming = cocktailFiltered();
   return `<div class="pop-area"><span class="dot" style="background:${v.color}"></span>${esc(v.area)}</div>
     <div class="pop-name">${esc(titleCase(v.name))}${tierBadge(v)}</div>
-    <div class="pop-addr">${esc(v.address)}</div>${distLine(v)}
+    <div class="pop-addr">${esc(v.address)}</div>${distLine(v)}${hoursDetails(v.hours)}
     ${v.cocktails.map(c => `<div class="pop-ck">${cocktailHtml(c, dimming && !cocktailMatches(c), true)}</div>`).join("")}
     <div class="pop-actions"><a href="${directionsUrl(titleCase(v.name), v.address)}" target="_blank" rel="noopener">Directions ↗</a>
     <button type="button" data-save="${esc(v.id)}">${saved.has(v.id) ? "Remove from saved" : "Save bar"}</button></div>`;
@@ -463,6 +629,7 @@ function villagePopupHtml() {
   return `<div class="pop-village"><div class="pop-area">Wristband entry</div>
     <div class="pop-name">${esc(V.name)}</div>
     <div class="pop-addr">${esc(V.address)}</div>${distLine(V)}
+    ${hoursLine({ week: V.schedule.week }, V.schedule)}
     <p><b>${esc(V.hours)}</b></p>
     <p>${esc(V.details)}</p>
     <details><summary>Pop-up bars</summary>${esc(V.popups.join(" · "))}</details>
@@ -506,6 +673,7 @@ function venueEl(v, dimming) {
     <button class="save" type="button" aria-label="Save ${esc(titleCase(v.name))}" aria-pressed="${saved.has(v.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg></button>
     <div class="va">${esc(v.address)}</div>
     ${d != null ? `<div class="dist" style="grid-column:1">${state.sort === "near" ? `<span class="dot" style="background:${v.color}"></span>` : ""}${fmtDist(d)}</div>` : ""}
+    <div style="grid-column:1">${hoursLine(v.hours)}</div>
     <div class="ck">${v.cocktails.map(c => cocktailHtml(c, dimming && !cocktailMatches(c), false)).join("")}</div>`;
   el.querySelector(".save").onclick = e => { e.stopPropagation(); toggleSave(v.id); };
   el.onclick = () => select(v.id);
@@ -518,14 +686,17 @@ function villageEl() {
   const d = distTo(VILLAGE);
   el.innerHTML = `<span class="vi">${GLASS_SVG}</span><b>${esc(VILLAGE.name)}</b>
     <span class="vh">Festival Square · ${esc(VILLAGE.hours.replace(/^Open /, ""))}</span>
+    ${hoursLine({ week: VILLAGE.schedule.week }, VILLAGE.schedule)}
     ${d != null ? `<span class="dist">${fmtDist(d)}</span>` : ""}`;
   el.onclick = () => select(VILLAGE_ID);
   el.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(VILLAGE_ID); } };
   return el;
 }
+const openAreas = new Set();
 let firstRender = true;
 function render({ refit = true } = {}) {
   const shown = VENUES.filter(matches);
+  currentShown = shown;
   const dimming = cocktailFiltered();
   // e.g. "122 Signature + 17 Prestige"; once filtered, "4 of 122 Signature + 1 of 17 Prestige"
   const tierCount = tier => {
@@ -534,9 +705,14 @@ function render({ refit = true } = {}) {
   };
   document.getElementById("count").innerHTML = tierCount("signature") + " + " + tierCount("prestige");
   document.getElementById("reset").hidden = !anyFilter();
+  if (appEl.classList.contains("list-collapsed")) listBtn.querySelector("span").textContent = `Show bar list (${shown.length})`;
+  if (typeof setAllLabel === "function" && areasBtn) setAllLabel();
   refreshFilterButton();
-  markerLayer.clearLayers();
-  shown.forEach(v => markerLayer.addLayer(markers.get(v.id)));
+  // Only add/remove pins whose visibility changed, so an open popup survives a list rebuild
+  const keep = new Set(shown.map(v => v.id));
+  markerLayer.eachLayer(m => { if (!keep.has(m.venueId)) markerLayer.removeLayer(m); });
+  shown.forEach(v => { const m = markers.get(v.id); if (!markerLayer.hasLayer(m)) markerLayer.addLayer(m); });
+  updateNames();
   const scrollTop = listEl.scrollTop;
   listEl.innerHTML = "";
   const frag = document.createDocumentFragment();
@@ -551,10 +727,15 @@ function render({ refit = true } = {}) {
     AREAS.forEach(([a, col]) => {
       const vs = shown.filter(v => v.area === a).sort((x, y) => x.name.localeCompare(y.name));
       if (!vs.length) return;
-      const h = document.createElement("div");
-      h.className = "area-h"; h.innerHTML = `<span class="dot" style="background:${col}"></span>${esc(a)} · ${vs.length}`;
+      // Areas start folded; searching/filtering opens them all so results are never hidden
+      const open = anyFilter() || openAreas.has(a);
+      const h = document.createElement("button");
+      h.type = "button"; h.className = "area-h"; h.setAttribute("aria-expanded", open);
+      h.innerHTML = `<span class="dot" style="background:${col}"></span>${esc(a)} · ${vs.length}<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+      h.onclick = () => { openAreas.has(a) ? openAreas.delete(a) : openAreas.add(a); render({ refit: false }); };
+      if (anyFilter()) h.disabled = true;
       frag.appendChild(h);
-      vs.forEach(v => frag.appendChild(venueEl(v, dimming)));
+      if (open) vs.forEach(v => frag.appendChild(venueEl(v, dimming)));
     });
   }
   listEl.appendChild(frag);
@@ -569,7 +750,9 @@ function select(id, { fromMap = false } = {}) {
   if (prev != null && markers.get(prev)) setActive(markers.get(prev), false);
   listEl.querySelectorAll(".active").forEach(e => e.classList.remove("active"));
   if (id == null) return;
-  const m = markers.get(id); setActive(m, true);
+  const m = markers.get(id); setActive(m, true); updateNames();
+  const v = byId.get(id);
+  if (v && state.sort === "area" && !anyFilter() && !openAreas.has(v.area)) { openAreas.add(v.area); render({ refit: false }); setAllLabel(); }
   const el = listEl.querySelector(`[data-id="${id}"]`);
   if (el) { el.classList.add("active"); if (fromMap) el.scrollIntoView({ block: "nearest", behavior: reduceMotion() ? "auto" : "smooth" }); }
   if (!fromMap) {
@@ -655,12 +838,85 @@ function locate() {
   }, { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 });
 }
 
+// ---- compass: shows which way is north once rotated; tap to reset
+const CompassControl = L.Control.extend({
+  options: { position: "topleft" },
+  onAdd() {
+    const wrap = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+    const a = L.DomUtil.create("a", "compass-btn", wrap);
+    a.href = "#"; a.setAttribute("role", "button");
+    a.title = a.ariaLabel = canHover ? "Reset to north (Shift + drag to rotate the map)" : "Reset to north (twist with two fingers to rotate)";
+    a.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 15.5 12h-7z" fill="var(--accent)"/><path d="M12 21 8.5 12h7z" fill="currentColor" opacity=".55"/></svg>`;
+    L.DomEvent.disableClickPropagation(wrap);
+    L.DomEvent.on(a, "click", e => { L.DomEvent.preventDefault(e); map.setBearing(0); });
+    this.btn = a;
+    return wrap;
+  },
+});
+const compass = new CompassControl().addTo(map);
+let rotT;
+map.on("rotate", () => {
+  const b = map.getBearing();
+  compass.btn.querySelector("svg").style.transform = `rotate(${-b}deg)`;
+  compass.btn.classList.toggle("rotated", Math.abs(b) > 0.5);
+  clearTimeout(rotT); rotT = setTimeout(() => { updateLabels(); updateNames(); }, 120);
+});
+
+// ---- maximise the map (CSS only; the Fullscreen API isn't available on iPhone)
+const appEl = document.querySelector(".app");
+const MAX_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>`;
+const MIN_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>`;
+const MaxControl = L.Control.extend({
+  options: { position: "topright" },
+  onAdd() {
+    const wrap = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+    const a = L.DomUtil.create("a", "max-btn", wrap);
+    a.href = "#"; a.setAttribute("role", "button");
+    L.DomEvent.disableClickPropagation(wrap);
+    L.DomEvent.on(a, "click", e => { L.DomEvent.preventDefault(e); setMaximised(!appEl.classList.contains("map-max")); });
+    this.btn = a;
+    return wrap;
+  },
+});
+const maxCtl = new MaxControl().addTo(map);
+function setMaximised(on) {
+  appEl.classList.toggle("map-max", on);
+  maxCtl.btn.innerHTML = on ? MIN_ICON : MAX_ICON;
+  maxCtl.btn.title = maxCtl.btn.ariaLabel = on ? "Exit full map (Esc)" : "Maximise map";
+  requestAnimationFrame(() => map.invalidateSize());
+}
+setMaximised(false);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && appEl.classList.contains("map-max")) setMaximised(false); });
+
+// ---- collapse the bar list
+const listBtn = document.getElementById("toggleList");
+function setListCollapsed(on) {
+  appEl.classList.toggle("list-collapsed", on);
+  listBtn.setAttribute("aria-expanded", !on);
+  listBtn.querySelector("span").textContent = on ? `Show bar list (${currentShown.length})` : "Hide bar list";
+  if (typeof areasBtn !== "undefined") setAllLabel();
+  requestAnimationFrame(() => map.invalidateSize());
+}
+listBtn.onclick = () => setListCollapsed(!appEl.classList.contains("list-collapsed"));
+const areasBtn = document.getElementById("toggleAreas");
+function setAllLabel() {
+  areasBtn.hidden = state.sort !== "area" || !!anyFilter() || appEl.classList.contains("list-collapsed");
+  areasBtn.textContent = openAreas.size === AREAS.length ? "Collapse all" : "Expand all";
+}
+areasBtn.onclick = () => {
+  if (openAreas.size === AREAS.length) openAreas.clear(); else AREAS.forEach(([a]) => openAreas.add(a));
+  render({ refit: false });
+};
+
 // ---- boot
 map.fitBounds(L.latLngBounds(VENUES.map(v => [v.lat, v.lng])), { padding: [24, 24] });
 render();
 styleBase(); updateLabels();
 map.on("zoomend", () => { styleBase(); });
-map.on("moveend", updateLabels);
+map.on("moveend", () => { updateLabels(); updateNames(); });
+setListCollapsed(false);
+// keep "Open now" statuses current
+setInterval(() => render({ refit: false }), 5 * 60 * 1000);
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", styleBase);
 new MutationObserver(styleBase).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 })().catch(err => {
