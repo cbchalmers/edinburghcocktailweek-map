@@ -6,7 +6,7 @@ lists the bars but has no map, so this site plots them.
 
 - Pins are coloured by area, and Prestige bars are gold-edged diamonds. Click one to see its cocktail photo, ingredients, opening hours and a walking directions link.
 - Each bar shows whether it's open now (in Edinburgh time) and when it closes or next opens.
-- Zoom in to see bar names on the map. Rotate the map with a two-finger twist, or Shift + drag on a computer; the compass resets north.
+- Zoom in to see bar names on the map. Rotate the map with a two-finger twist, or right-click drag (Ctrl + drag) on a computer; the compass resets north.
 - The map can be maximised, and the bar list can be hidden. Areas in the list start folded.
 - The Cocktail Village at Festival Square has its own pin with opening times, pop-up bars and street food.
 - "Nearest to me" uses your location to sort bars by distance and show walking times.
@@ -14,10 +14,11 @@ lists the bars but has no map, so this site plots them.
 - You can filter by list (Signature/Prestige), area, base spirit, style and flavour, and features (vegan alternative, accessible, dogs welcome, alcohol-free alternative). "Leave out" hides cocktails with egg white or foams, or with dairy, based on the listed ingredients.
 - You can save bars to plan a night. Saved bars are stored in your browser.
 
-It's a static site with no build step. Leaflet loads from cdnjs and the
-[leaflet-rotate](https://github.com/Raruto/leaflet-rotate) plugin (GPL-3.0) from
-jsDelivr. The basemap is drawn from embedded OpenStreetMap vector data, so
-there's no tile server or API key. Cocktail photos are loaded from Edinburgh
+It's a static site with no build step. The map is
+[MapLibre GL JS](https://maplibre.org) (BSD-3-Clause), loaded from jsDelivr. The
+basemap is drawn from embedded OpenStreetMap vector data, so there's no tile
+server or API key. Map labels use Noto Sans (SIL Open Font License), with the
+glyph files self-hosted in `public/fonts/`. Cocktail photos are loaded from Edinburgh
 Cocktail Week's own image CDN, not copied into this repo.
 
 ## Structure
@@ -27,6 +28,7 @@ public/
   index.html          the app
   data/venues.json    bars, cocktails, coordinates, Cocktail Village (generated)
   data/basemap.json   simplified streets/parks/water/coastline (generated)
+  fonts/              Noto Sans glyphs (PBF) for map labels
 scripts/
   update_venues.py    scrape the ECW pages + geocode → venues.json
   geocache.json       address → [lat, lng]; edit to correct a pin by hand

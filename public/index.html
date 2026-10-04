@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css">
 <style>
 /* Layout: full-height app — filter + venue list rail on the left, vector map of the city on the right; stacks map-over-list on phones. */
 :root{
@@ -18,7 +18,7 @@
   --accent:#a8234f; --accent-ink:#ffffff; --accent-soft:#f6e3ea;
   --land:#ece7e1; --road:#ffffff; --road-major:#f5d9a8; --road-casing:#d8cfc6; --path:#e6dcd2;
   --park:#d5e3c4; --water:#b9d3e0; --rail:#b8aeb0; --label:#6b5f63; --label-halo:#ece7e1;
-  --gold:#b8892b; --me:#1a73e8; --open:#1e8a4c; --soon:#b8740f;
+  --gold:#b8892b; --me:#1a73e8; --ctrl-filter:none; --open:#1e8a4c; --soon:#b8740f;
   --display:"Young Serif",Georgia,"Times New Roman",serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -29,14 +29,14 @@
   --accent:#ff6f9a; --accent-ink:#1b0f15; --accent-soft:#3a2130;
   --land:#211c25; --road:#3a3340; --road-major:#6a5440; --road-casing:#2a2430; --path:#2f2934;
   --park:#26332a; --water:#1d3140; --rail:#4d4552; --label:#a99dab; --label-halo:#211c25;
-  --gold:#e2b552; --me:#5ea1ff; --open:#4cc27e; --soon:#f0a640;
+  --gold:#e2b552; --me:#5ea1ff; --ctrl-filter:invert(1) hue-rotate(180deg); --open:#4cc27e; --soon:#f0a640;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#17131a; --panel:#1e1922; --ink:#f1eaef; --muted:#a698a6; --line:#342c38;
   --accent:#ff6f9a; --accent-ink:#1b0f15; --accent-soft:#3a2130;
   --land:#211c25; --road:#3a3340; --road-major:#6a5440; --road-casing:#2a2430; --path:#2f2934;
   --park:#26332a; --water:#1d3140; --rail:#4d4552; --label:#a99dab; --label-halo:#211c25;
-  --gold:#e2b552; --me:#5ea1ff; --open:#4cc27e; --soon:#f0a640;
+  --gold:#e2b552; --me:#5ea1ff; --ctrl-filter:invert(1) hue-rotate(180deg); --open:#4cc27e; --soon:#f0a640;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45); color-scheme:dark}
 
 html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
@@ -63,7 +63,7 @@ h1 em{font-style:normal;color:var(--accent)}
 .coffee svg{width:15px;height:15px}
 .list{overscroll-behavior:contain}
 #map{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
-.pin-hit{display:grid;place-items:center;cursor:pointer;background:none;border:0}
+.pin-hit{width:32px;height:32px;display:grid;place-items:center;cursor:pointer;background:none;border:0}
 .pin{width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px var(--panel),0 1px 3px rgba(0,0,0,.35);transition:transform .12s}
 .z-hi .pin{width:15px;height:15px}
 .pin-hit:hover .pin{transform:scale(1.2)}
@@ -72,14 +72,14 @@ h1 em{font-style:normal;color:var(--accent)}
 .pin.prestige{border-radius:3px;transform:rotate(45deg);box-shadow:0 0 0 2px var(--panel),0 0 0 3.5px var(--gold),0 1px 4px rgba(0,0,0,.35)}
 .pin-hit:hover .pin.prestige{transform:rotate(45deg) scale(1.2)}
 .pin-hit.active .pin.prestige{box-shadow:0 0 0 3px var(--ink),0 0 0 5px var(--gold)}
-.village-pin{display:grid;place-items:center;cursor:pointer}
+.village-pin{width:40px;height:40px;display:grid;place-items:center;cursor:pointer}
 .village-pin span{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);box-shadow:0 0 0 2px var(--panel),var(--shadow)}
 .village-pin svg{width:18px;height:18px}
 .village-pin.active span{box-shadow:0 0 0 3px var(--ink),0 0 0 5px var(--panel)}
-.me-dot{display:grid;place-items:center;pointer-events:none!important}
+.me-dot{width:22px;height:22px;display:grid;place-items:center;pointer-events:none!important}
 .me-dot span{width:16px;height:16px;border-radius:50%;background:var(--me);box-shadow:0 0 0 3px #fff,0 1px 4px rgba(0,0,0,.4);animation:me-pulse 2s ease-out infinite}
 @keyframes me-pulse{0%{box-shadow:0 0 0 3px #fff,0 0 0 3px color-mix(in srgb,var(--me) 50%,transparent)}100%{box-shadow:0 0 0 3px #fff,0 0 0 16px transparent}}
-.locate-btn{width:30px;height:30px;display:grid!important;place-items:center;cursor:pointer}
+.locate-btn,.max-btn{display:grid!important;place-items:center;cursor:pointer}
 .locate-btn svg{width:18px;height:18px}
 .locate-btn.on{color:var(--me)!important}
 .locate-btn.busy svg{animation:spin 1s linear infinite}
@@ -135,11 +135,6 @@ h1 em{font-style:normal;color:var(--accent)}
 .week tr.today th,.week tr.today td{color:var(--ink);font-weight:700}
 .hsrc,.hnote{font-size:.72rem;color:var(--muted);margin:4px 0 0}
 .hsrc a{color:inherit}
-.venue-label{pointer-events:none!important;white-space:nowrap}
-.venue-label span{position:absolute;top:0;transform:translate(10px,-50%);font-size:11.5px;font-weight:600;color:var(--ink);text-shadow:0 0 3px var(--land),0 0 3px var(--land),0 0 3px var(--land),0 0 1px var(--land)}
-.venue-label.l span{transform:translate(calc(-100% - 10px),-50%)}
-.compass-btn,.max-btn{width:30px;height:30px;display:grid!important;place-items:center;cursor:pointer}
-.compass-btn svg{width:22px;height:22px;transition:transform .15s}
 .max-btn svg{width:18px;height:18px}
 .listbar{border-bottom:1px solid var(--line)}
 .listbar #toggleList{flex:1;display:flex;align-items:center;gap:8px;background:none;border:0;padding:8px 20px;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;text-align:left}
@@ -193,16 +188,24 @@ button.area-h:disabled .chev{display:none}
 
 .mapwrap{position:relative;min-width:0;min-height:0}
 #map{position:absolute;inset:0;background:var(--land)}
-.leaflet-container{font-family:var(--body);background:var(--land)}
-.leaflet-control-attribution{background:color-mix(in srgb,var(--panel) 85%,transparent)!important;color:var(--muted)!important;font-size:10px}
-.leaflet-control-attribution a{color:var(--muted)!important}
-.leaflet-bar a{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important}
-.leaflet-bar{border:1px solid var(--line)!important;box-shadow:var(--shadow)!important}
-.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
-.leaflet-popup-content-wrapper{border-radius:12px}
-.leaflet-popup-content{margin:14px 16px;min-width:220px;max-width:280px;font-size:.88rem;line-height:1.4}
-.leaflet-container a.leaflet-popup-close-button{color:var(--muted)}
-.leaflet-popup-content{max-height:min(60vh,420px);overflow-y:auto}
+.maplibregl-map{font-family:var(--body);background:var(--land)}
+.maplibregl-ctrl-group{background:var(--panel)!important;border:1px solid var(--line);box-shadow:var(--shadow)!important}
+.maplibregl-ctrl-group button{color:var(--ink)}
+.maplibregl-ctrl-group button+button{border-top:1px solid var(--line)!important}
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon{filter:var(--ctrl-filter)}
+.maplibregl-ctrl-attrib{background:color-mix(in srgb,var(--panel) 85%,transparent)!important;color:var(--muted);font-size:10px}
+.maplibregl-ctrl-attrib a{color:var(--muted)!important}
+.maplibregl-ctrl-attrib-button{filter:var(--ctrl-filter)}
+.ecw-popup .maplibregl-popup-content{background:var(--panel);color:var(--ink);box-shadow:var(--shadow);border-radius:12px;padding:14px 16px;min-width:220px;max-width:280px;max-height:min(60vh,420px);overflow-y:auto;font-size:.88rem;line-height:1.4}
+.ecw-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,.ecw-popup.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,.ecw-popup.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{border-top-color:var(--panel)}
+.ecw-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip,.ecw-popup.maplibregl-popup-anchor-top-left .maplibregl-popup-tip,.ecw-popup.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{border-bottom-color:var(--panel)}
+.ecw-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip{border-right-color:var(--panel)}
+.ecw-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip{border-left-color:var(--panel)}
+.ecw-popup .maplibregl-popup-close-button{color:var(--muted);font-size:20px;line-height:1;padding:4px 8px;z-index:1}
+.ecw-popup{z-index:3000}
+.hover-tip{pointer-events:none;z-index:2500}
+.hover-tip .maplibregl-popup-content{background:var(--ink);color:var(--panel);padding:4px 8px;border-radius:6px;font-size:.78rem;font-weight:600;box-shadow:var(--shadow)}
+.hover-tip .maplibregl-popup-tip{display:none}
 .pop-area{font-size:.66rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:flex;gap:6px;align-items:center}
 .pop-area .dot{width:8px;height:8px;border-radius:50%}
 .pop-name{font-weight:700;font-size:1rem;margin:2px 0 0}
@@ -210,11 +213,6 @@ button.area-h:disabled .chev{display:none}
 .pop-ck+.pop-ck{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
 .pop-actions{display:flex;gap:12px;margin-top:10px;font-size:.82rem;font-weight:600}
 .pop-actions a,.pop-actions button{color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:none;font-weight:600}
-.st-label{pointer-events:none!important;white-space:nowrap;font-size:10.5px;font-weight:500;color:var(--label);text-shadow:0 0 3px var(--label-halo),0 0 3px var(--label-halo),0 0 2px var(--label-halo)}
-.st-label span{display:inline-block;transform:translate(-50%,-50%)}
-.st-label.r3{font-weight:700;font-size:11.5px}
-.dist-label{pointer-events:none!important;white-space:nowrap;font-family:var(--display);font-size:15px;letter-spacing:.04em;color:var(--muted);opacity:.75;text-shadow:0 0 4px var(--label-halo),0 0 4px var(--label-halo)}
-.dist-label span{display:inline-block;transform:translate(-50%,-50%)}
 .legend-key{position:absolute;right:12px;bottom:28px;z-index:500;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:.72rem;color:var(--muted);box-shadow:var(--shadow);display:grid;grid-template-columns:auto auto;gap:3px 10px}
 .legend-key b{font-family:var(--mono);color:var(--ink);font-weight:500}
 .legend-key .lk-pin{display:grid;place-items:center}
@@ -289,8 +287,7 @@ button.area-h:disabled .chev{display:none}
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
 <script>
 (async () => {
 const [DATA, BASE] = await Promise.all(["data/venues.json", "data/basemap.json"].map(u => fetch(u, { cache: "no-cache" }).then(r => r.json()))); // revalidate so page and data never mismatch
@@ -405,102 +402,98 @@ savedChip.onclick = () => { state.savedOnly = !state.savedOnly; savedChip.setAtt
 function refreshSavedCount() { savedChip.querySelector(".n").textContent = saved.size; }
 refreshSavedCount();
 
-// ---- map
-const map = L.map("map", { zoomControl: true, minZoom: 12, maxZoom: 19, preferCanvas: true, attributionControl: true,
-  // leaflet-rotate: two-finger twist on touch screens, Shift + drag on desktop; our own compass control resets north
-  rotate: true, bearing: 0, touchRotate: true, shiftKeyRotate: true, rotateControl: false,
-  maxBounds: [[55.89, -3.32], [56.02, -3.08]], maxBoundsViscosity: 0.8, zoomSnap: 0.5 });
-map.attributionControl.setPrefix(false).addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>');
-
-if (location.hostname === "localhost") window.ecwMap = map; // handy for poking at the map from the console locally
-const renderer = L.canvas({ padding: 0.2 });
-const decode = arr => { const out = []; let a = 0, b = 0; for (let i = 0; i < arr.length; i += 2) { a += arr[i]; b += arr[i + 1]; out.push([a / 1e5, b / 1e5]); } return out; };
-const geo = Object.fromEntries(Object.entries(BASE.layers).map(([k, v]) => [k, v.map(decode)]));
+// ---- map (MapLibre GL: GPU-drawn, so pins, labels and streets move together when zooming or rotating)
+// MapLibre zoom levels are one lower than Leaflet's for the same scale (512px tiles).
+const NAME_ZOOM = 15;        // bar names from here
+const EDINBURGH = [[-3.32, 55.89], [-3.08, 56.02]];
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const W = (z, base) => Math.max(0.5, base * Math.pow(1.6, z - 15));
-const base = {
-  sea:   L.polygon(geo.sea, { renderer, stroke: false, fillOpacity: 1, interactive: false }),
-  park:  L.polygon(geo.park, { renderer, stroke: false, fillOpacity: 1, interactive: false }),
-  water: L.polygon(geo.water, { renderer, stroke: false, fillOpacity: 1, interactive: false }),
-  river: L.polyline(geo.river, { renderer, interactive: false, lineCap: "round" }),
-  rail:  L.polyline(geo.rail, { renderer, interactive: false, dashArray: "4 4" }),
-  path:  L.polyline(geo.path, { renderer, interactive: false, lineCap: "round", lineJoin: "round" }),
-  minorCase: L.polyline(geo.minor, { renderer, interactive: false, lineCap: "round", lineJoin: "round" }),
-  majorCase: L.polyline(geo.major, { renderer, interactive: false, lineCap: "round", lineJoin: "round" }),
-  minor: L.polyline(geo.minor, { renderer, interactive: false, lineCap: "round", lineJoin: "round" }),
-  major: L.polyline(geo.major, { renderer, interactive: false, lineCap: "round", lineJoin: "round" }),
-};
-Object.values(base).forEach(l => l.addTo(map));
-function styleBase() {
-  const z = map.getZoom();
-  base.sea.setStyle({ fillColor: css("--water") });
-  base.park.setStyle({ fillColor: css("--park") });
-  base.water.setStyle({ fillColor: css("--water") });
-  base.river.setStyle({ color: css("--water"), weight: W(z, 4) });
-  base.rail.setStyle({ color: css("--rail"), weight: z >= 15 ? 1.5 : 1, opacity: 0.8 });
-  base.path.setStyle({ color: css("--path"), weight: W(z, 3.5) });
-  base.minorCase.setStyle({ color: css("--road-casing"), weight: W(z, 4.6), opacity: z >= 14 ? 1 : 0 });
-  base.majorCase.setStyle({ color: css("--road-casing"), weight: W(z, 7.4) });
-  base.minor.setStyle({ color: css("--road"), weight: W(z, 3.2), opacity: z >= 13 ? 1 : 0.6 });
-  base.major.setStyle({ color: css("--road-major"), weight: W(z, 5.6) });
-  if (accuracy) accuracy.setStyle({ color: css("--me"), fillColor: css("--me") });
-  map.getContainer().classList.toggle("z-hi", z >= 15);
-}
+const map = new maplibregl.Map({
+  container: "map",
+  style: { version: 8, glyphs: "fonts/{fontstack}/{range}.pbf", sources: {}, layers: [{ id: "land", type: "background", paint: { "background-color": css("--land") } }] },
+  bounds: [[Math.min(...VENUES.map(v => v.lng)), Math.min(...VENUES.map(v => v.lat))], [Math.max(...VENUES.map(v => v.lng)), Math.max(...VENUES.map(v => v.lat))]],
+  fitBoundsOptions: { padding: 24 },
+  minZoom: 11, maxZoom: 18.5, maxBounds: EDINBURGH, maxPitch: 0, pitchWithRotate: false, touchPitch: false,
+  attributionControl: { compact: true, customAttribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors' },
+});
+if (location.hostname === "localhost") window.ecwMap = map; // handy for poking at the map from the console locally
+map.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: false }), "top-left");
+// The list and pins don't wait for the map style: the basemap layers attach when MapLibre is ready
+// (it pauses while the tab is hidden, which would otherwise hold up the whole page).
+let baseReady = false;
 
-// street + district labels
-// leaflet-rotate keeps pins and popups upright in its "norotatePane"; our label panes go there too so they stack under them
-const LABEL_PARENT = map.getPane("norotatePane") || map.getPane("mapPane");
-map.createPane("labels", LABEL_PARENT).style.zIndex = 450; // above roads, below pins
-map.getPane("labels").style.pointerEvents = "none";
-const labelLayer = L.layerGroup().addTo(map);
+// Basemap: delta-encoded OSM geometry from basemap.json → GeoJSON sources
+const decode = arr => { const out = []; let a = 0, b = 0; for (let i = 0; i < arr.length; i += 2) { a += arr[i]; b += arr[i + 1]; out.push([b / 1e5, a / 1e5]); } return out; };
+const fc = features => ({ type: "FeatureCollection", features });
+const lines = k => fc([{ type: "Feature", properties: {}, geometry: { type: "MultiLineString", coordinates: BASE.layers[k].map(decode) } }]);
+const polys = k => fc(BASE.layers[k].map(r => ({ type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: [decode(r)] } })));
+const pointsFC = rows => fc(rows.map(([props, lng, lat]) => ({ type: "Feature", properties: props, geometry: { type: "Point", coordinates: [lng, lat] } })));
 const DISTRICTS = [["New Town",55.9555,-3.1985],["Old Town",55.9495,-3.1895],["Leith",55.9715,-3.1715],["Stockbridge",55.9585,-3.2105],["Broughton",55.9605,-3.1885],["Tollcross",55.9435,-3.2045],["Bruntsfield",55.9375,-3.2085],["Canonmills",55.9640,-3.2010],["Haymarket",55.9455,-3.2195],["Southside",55.9440,-3.1825],["Morningside",55.9290,-3.2095]];
-// Street names are drawn along the street; when the map is rotated, add the bearing and keep the text upright.
-const uprightAngle = ang => { let a = ang + (map.getBearing ? map.getBearing() : 0); a = ((a + 180) % 360 + 360) % 360 - 180; return a > 90 ? a - 180 : a < -90 ? a + 180 : a; };
-function updateLabels() {
-  labelLayer.clearLayers();
-  const z = map.getZoom(), b = map.getBounds().pad(0.1);
-  if (z < 15.5) {
-    DISTRICTS.forEach(([n, la, lo]) => labelLayer.addLayer(L.marker([la, lo], { pane: "labels", interactive: false, keyboard: false,
-      icon: L.divIcon({ className: "dist-label", html: `<span>${n}</span>`, iconSize: [0, 0] }) })));
-  }
-  const minRank = z >= 16.5 ? 1 : z >= 15.5 ? 2 : z >= 14.5 ? 3 : 9;
-  BASE.labels.forEach(([n, la, lo, r, ang]) => {
-    if (r < minRank || !b.contains([la, lo])) return;
-    labelLayer.addLayer(L.marker([la, lo], { pane: "labels", interactive: false, keyboard: false,
-      icon: L.divIcon({ className: "st-label r" + r, html: `<span style="transform:translate(-50%,-50%) rotate(${uprightAngle(ang)}deg)">${esc(n)}</span>`, iconSize: [0, 0] }) }));
-  });
-}
+function setupBase() {
+  ["sea", "park", "water"].forEach(k => map.addSource(k, { type: "geojson", data: polys(k) }));
+  ["river", "rail", "path", "minor", "major"].forEach(k => map.addSource(k, { type: "geojson", data: lines(k) }));
+  // Line widths grow ×1.6 per zoom level (the same curve the Leaflet version used)
+  const width = base => ["interpolate", ["exponential", 1.6], ["zoom"], 11, Math.max(0.5, base * 1.6 ** -3), 18.5, base * 1.6 ** 4.5];
+  const ROUND = { "line-cap": "round", "line-join": "round" };
+  map.addLayer({ id: "sea", type: "fill", source: "sea" });
+  map.addLayer({ id: "park", type: "fill", source: "park" });
+  map.addLayer({ id: "water", type: "fill", source: "water" });
+  map.addLayer({ id: "river", type: "line", source: "river", layout: ROUND, paint: { "line-width": width(4) } });
+  map.addLayer({ id: "rail", type: "line", source: "rail", paint: { "line-width": ["step", ["zoom"], 1, 14, 1.5], "line-opacity": 0.8, "line-dasharray": [3, 3] } });
+  map.addLayer({ id: "path", type: "line", source: "path", layout: ROUND, paint: { "line-width": width(3.5) } });
+  map.addLayer({ id: "minor-case", type: "line", source: "minor", minzoom: 13, layout: ROUND, paint: { "line-width": width(4.6) } });
+  map.addLayer({ id: "major-case", type: "line", source: "major", layout: ROUND, paint: { "line-width": width(7.4) } });
+  map.addLayer({ id: "minor", type: "line", source: "minor", layout: ROUND, paint: { "line-width": width(3.2), "line-opacity": ["step", ["zoom"], 0.6, 12, 1] } });
+  map.addLayer({ id: "major", type: "line", source: "major", layout: ROUND, paint: { "line-width": width(5.6) } });
 
-// ---- bar names on the map when zoomed in; placed right (or left) of each pin, skipping any that would overlap
-map.createPane("venueLabels", LABEL_PARENT).style.zIndex = 590; // just below the pins
-map.getPane("venueLabels").style.pointerEvents = "none";
-const nameLayer = L.layerGroup().addTo(map);
-const NAME_ZOOM = 16;
-const measureCtx = document.createElement("canvas").getContext("2d");
+  // Street names (rank 3 = main roads first), drawn along the street and kept upright when rotated
+  map.addSource("streets", { type: "geojson", data: pointsFC(BASE.labels.map(([n, la, lo, r, ang]) => [{ name: n, rank: r, angle: ang }, lo, la])) });
+  [[3, 13.5], [2, 14.5], [1, 15.5]].forEach(([rank, minzoom]) => map.addLayer({
+    id: "streets-" + rank, type: "symbol", source: "streets", minzoom, filter: ["==", ["get", "rank"], rank],
+    layout: { "text-field": ["get", "name"], "text-font": [rank === 3 ? "Noto Sans Bold" : "Noto Sans Regular"], "text-size": rank === 3 ? 11.5 : 10.5,
+      "text-rotate": ["get", "angle"], "text-rotation-alignment": "map", "text-keep-upright": true, "text-padding": 4 },
+  }));
+  map.addSource("districts", { type: "geojson", data: pointsFC(DISTRICTS.map(([n, la, lo]) => [{ name: n }, lo, la])) });
+  map.addLayer({ id: "districts", type: "symbol", source: "districts", maxzoom: 14.5,
+    layout: { "text-field": ["upcase", ["get", "name"]], "text-font": ["Noto Sans Bold"], "text-size": 12, "text-letter-spacing": 0.15, "text-allow-overlap": false } });
+
+  // Bar names: MapLibre places them left or right of each pin and drops any that would collide.
+  // An invisible "pin blocker" icon on every pin sits above the names layer, so names never cover a pin.
+  map.addImage("blank", { width: 14, height: 14, data: new Uint8Array(14 * 14 * 4) });
+  map.addSource("venue-names", { type: "geojson", data: fc([]) });
+  map.addLayer({ id: "venue-names", type: "symbol", source: "venue-names", minzoom: NAME_ZOOM,
+    layout: { "text-field": ["get", "label"], "text-font": ["Noto Sans Bold"], "text-size": 11.5, "symbol-sort-key": ["get", "order"],
+      "text-max-width": 16, "text-variable-anchor": ["left", "right"], "text-radial-offset": 1.2, "text-justify": "auto", "text-padding": 1 } });
+  map.addLayer({ id: "pin-blockers", type: "symbol", source: "venue-names", minzoom: NAME_ZOOM,
+    layout: { "icon-image": "blank", "icon-allow-overlap": true, "icon-ignore-placement": false, "icon-padding": 0 } });
+  // Accuracy circle around "my location"
+  map.addSource("accuracy", { type: "geojson", data: fc([]) });
+  map.addLayer({ id: "accuracy", type: "fill", source: "accuracy", paint: { "fill-opacity": 0.12 } }, "streets-3");
+  map.addLayer({ id: "accuracy-edge", type: "line", source: "accuracy", paint: { "line-opacity": 0.5, "line-width": 1 } }, "streets-3");
+
+}
+map.once("load", () => { setupBase(); baseReady = true; styleBase(); updateNames(); sizeClass(); });
+
+function styleBase() {
+  if (!baseReady) return;
+  const set = (id, prop, v) => map.setPaintProperty(id, prop, v);
+  set("land", "background-color", css("--land"));
+  set("sea", "fill-color", css("--water")); set("water", "fill-color", css("--water")); set("park", "fill-color", css("--park"));
+  set("river", "line-color", css("--water")); set("rail", "line-color", css("--rail")); set("path", "line-color", css("--path"));
+  set("minor-case", "line-color", css("--road-casing")); set("major-case", "line-color", css("--road-casing"));
+  set("minor", "line-color", css("--road")); set("major", "line-color", css("--road-major"));
+  ["streets-1", "streets-2", "streets-3"].forEach(id => { set(id, "text-color", css("--label")); set(id, "text-halo-color", css("--label-halo")); set(id, "text-halo-width", 1.5); });
+  set("districts", "text-color", css("--muted")); set("districts", "text-halo-color", css("--label-halo")); set("districts", "text-halo-width", 2); set("districts", "text-opacity", 0.8);
+  set("venue-names", "text-color", css("--ink")); set("venue-names", "text-halo-color", css("--land")); set("venue-names", "text-halo-width", 1.8);
+  set("accuracy", "fill-color", css("--me")); set("accuracy-edge", "line-color", css("--me"));
+}
+const sizeClass = () => map.getContainer().classList.toggle("z-hi", map.getZoom() >= 14);
+map.on("zoom", sizeClass);
+
 let currentShown = [];
 function updateNames() {
-  nameLayer.clearLayers();
-  if (map.getZoom() < NAME_ZOOM) return;
-  measureCtx.font = "600 11.5px Figtree, system-ui, sans-serif";
-  const size = map.getSize();
+  if (!baseReady) return;
   const rank = v => (v.id === activeId ? 8 : 0) + (saved.has(v.id) ? 4 : 0) + (v.tier === "prestige" ? 2 : 0);
-  const order = currentShown.slice().sort((a, b) => rank(b) - rank(a) || a.name.localeCompare(b.name));
-  const pts = new Map(order.map(v => [v.id, map.latLngToContainerPoint([v.lat, v.lng])]));
-  const taken = [...pts.values()].map(p => [p.x - 8, p.y - 8, p.x + 8, p.y + 8]); // labels never cover a pin
-  const hits = b => taken.some(o => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]);
-  for (const v of order) {
-    const p = pts.get(v.id);
-    if (p.x < -150 || p.y < -20 || p.x > size.x + 150 || p.y > size.y + 20) continue;
-    const label = titleCase(v.name), w = measureCtx.measureText(label).width + 6, h = 16;
-    for (const side of ["r", "l"]) {
-      const x0 = side === "r" ? p.x + 10 : p.x - 10 - w, box = [x0, p.y - h / 2, x0 + w, p.y + h / 2];
-      if (hits(box)) continue;
-      taken.push(box);
-      nameLayer.addLayer(L.marker([v.lat, v.lng], { pane: "venueLabels", interactive: false, keyboard: false,
-        icon: L.divIcon({ className: "venue-label " + side, html: `<span>${esc(label)}</span>`, iconSize: [0, 0] }) }));
-      break;
-    }
-  }
+  map.getSource("venue-names").setData(pointsFC(currentShown.map(v => [{ label: titleCase(v.name), order: -rank(v) }, v.lng, v.lat])));
 }
 
 // ---- opening hours (always Edinburgh time, wherever the viewer is)
@@ -568,41 +561,58 @@ function hoursDetails(h) {
 const photoUrl = (u, w) => u ? `${u}?format=${w}w` : "";
 
 // ---- distance from the viewer
-let me = null;              // L.LatLng once located
-let meMarker = null, accuracy = null, watchId = null, lastSortedAt = null;
+let me = null;              // {lat, lng} once located
+let meMarker = null, watchId = null, lastSortedAt = null;
+const metres = (a, b) => { // haversine
+  const R = 6371000, rad = Math.PI / 180, dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+};
 const walkMins = m => Math.max(1, Math.round(m * 1.3 / 80)); // street detour ≈ 1.3 × straight line, 80 m/min
 const fmtDist = m => (m < 1000 ? `${Math.max(10, Math.round(m / 10) * 10)} m` : `${(m / 1000).toFixed(1)} km`) + ` · ${walkMins(m)} min walk`;
-const distTo = p => me ? me.distanceTo(L.latLng(p.lat, p.lng)) : null;
+const distTo = p => me ? metres(me, p) : null;
 
-// venue markers
+// ---- pins: HTML markers (32px tap target around a small dot, so they're easy to hit on touch screens)
 let activeId = null;
 const canHover = matchMedia("(hover: hover)").matches;
-const setActive = (m, on) => { const el = m.getElement(); if (el) el.classList.toggle("active", on); m.setZIndexOffset(on ? 1000 : m.baseZ || 0); };
-const markerLayer = L.featureGroup().addTo(map);
+const popup = new maplibregl.Popup({ maxWidth: "300px", offset: 14, focusAfterOpen: false, className: "ecw-popup" });
+let popupFor = null;
+popup.on("close", () => { const id = popupFor; popupFor = null; if (id != null && activeId === id) select(null); });
+const hoverTip = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 12, className: "hover-tip" });
+function makeMarker(id, lngLat, className, html, label, z = 0) {
+  const el = document.createElement("div");
+  el.className = className; el.innerHTML = html; el.setAttribute("role", "button"); el.tabIndex = 0;
+  el.setAttribute("aria-label", label); el.style.zIndex = z; el.dataset.z = z;
+  const m = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat(lngLat);
+  el.addEventListener("click", e => { e.stopPropagation(); select(id, { fromMap: true }); });
+  el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(id); } });
+  if (canHover) {
+    el.addEventListener("mouseenter", () => hoverTip.setLngLat(lngLat).setText(label).addTo(map));
+    el.addEventListener("mouseleave", () => hoverTip.remove());
+  }
+  m.lngLat = lngLat;
+  return m;
+}
+const setActive = (m, on) => { const el = m.getElement(); el.classList.toggle("active", on); el.style.zIndex = on ? 1000 : el.dataset.z; };
 const markSaved = id => { const el = markers.get(id)?.getElement(); if (el) el.classList.toggle("saved", saved.has(id)); };
-const markers = new Map(VENUES.map(v => {
-  // 32px tap target around a small dot, so pins are easy to hit on touch screens
-  const m = L.marker([v.lat, v.lng], { alt: titleCase(v.name), riseOnHover: true,
-    icon: L.divIcon({ className: "pin-hit", html: `<span class="pin${v.tier === "prestige" ? " prestige" : ""}" style="--c:${v.color}"></span>`, iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -8] }) });
-  if (canHover) m.bindTooltip(titleCase(v.name) + (v.tier === "prestige" ? " · £9" : ""), { direction: "top", offset: [0, -10] });
-  m.bindPopup(() => popupHtml(v), { autoPanPadding: [30, 30], maxWidth: 300 });
-  m.venueId = v.id;
-  m.on("add", () => { setActive(m, v.id === activeId); markSaved(v.id); });
-  m.on("click", () => select(v.id, { fromMap: true }));
-  m.on("popupclose", () => { if (activeId === v.id) select(null); });
-  return [v.id, m];
-}));
+const onMap = new Set();     // ids of venue pins currently on the map
+const markers = new Map(VENUES.map(v => [v.id, makeMarker(v.id, [v.lng, v.lat], "pin-hit",
+  `<span class="pin${v.tier === "prestige" ? " prestige" : ""}" style="--c:${v.color}"></span>`,
+  titleCase(v.name) + (v.tier === "prestige" ? " · £9 Prestige" : ""), v.tier === "prestige" ? 2 : 1)]));
 
 // Cocktail Village: always on the map, outside the filters
 const VILLAGE_ID = "village";
-const villageMarker = L.marker([VILLAGE.lat, VILLAGE.lng], { alt: VILLAGE.name, zIndexOffset: 500,
-  icon: L.divIcon({ className: "village-pin", html: `<span>${GLASS_SVG}</span>`, iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -14] }) }).addTo(map);
-villageMarker.baseZ = 500;
-if (canHover) villageMarker.bindTooltip(VILLAGE.name, { direction: "top", offset: [0, -16] });
-villageMarker.bindPopup(() => villagePopupHtml(), { autoPanPadding: [30, 30], maxWidth: 300 });
-villageMarker.on("click", () => select(VILLAGE_ID, { fromMap: true }));
-villageMarker.on("popupclose", () => { if (activeId === VILLAGE_ID) select(null); });
+const villageMarker = makeMarker(VILLAGE_ID, [VILLAGE.lng, VILLAGE.lat], "village-pin", `<span>${GLASS_SVG}</span>`, VILLAGE.name, 500).addTo(map);
 markers.set(VILLAGE_ID, villageMarker);
+
+function openPopupFor(id) {
+  const html = id === VILLAGE_ID ? villagePopupHtml() : popupHtml(byId.get(id));
+  popupFor = null; popup.remove();
+  popup.setLngLat(markers.get(id).lngLat).setHTML(html).addTo(map);
+  popupFor = id;
+  const btn = popup.getElement().querySelector("[data-save]");
+  if (btn) btn.onclick = () => { toggleSave(btn.dataset.save); btn.textContent = saved.has(btn.dataset.save) ? "Remove from saved" : "Save bar"; };
+}
 
 const directionsUrl = (name, address) => "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(name + ", " + address + ", Edinburgh") + "&travelmode=walking";
 const tierBadge = v => v.tier === "prestige" ? `<span class="tier">£9 Prestige</span>` : "";
@@ -637,10 +647,6 @@ function villagePopupHtml() {
     <div class="pop-actions"><a href="${directionsUrl("Festival Square", "Lothian Road")}" target="_blank" rel="noopener">Directions ↗</a>
     <a href="${esc(V.url)}" target="_blank" rel="noopener">Village details ↗</a></div></div>`;
 }
-map.on("popupopen", e => {
-  const btn = e.popup.getElement().querySelector("[data-save]");
-  if (btn) btn.onclick = () => { toggleSave(btn.dataset.save); btn.textContent = saved.has(btn.dataset.save) ? "Remove from saved" : "Save bar"; };
-});
 
 function toggleSave(id) {
   saved.has(id) ? saved.delete(id) : saved.add(id);
@@ -710,8 +716,8 @@ function render({ refit = true } = {}) {
   refreshFilterButton();
   // Only add/remove pins whose visibility changed, so an open popup survives a list rebuild
   const keep = new Set(shown.map(v => v.id));
-  markerLayer.eachLayer(m => { if (!keep.has(m.venueId)) markerLayer.removeLayer(m); });
-  shown.forEach(v => { const m = markers.get(v.id); if (!markerLayer.hasLayer(m)) markerLayer.addLayer(m); });
+  for (const id of [...onMap]) if (!keep.has(id)) { markers.get(id).remove(); onMap.delete(id); }
+  for (const v of shown) if (!onMap.has(v.id)) { const m = markers.get(v.id).addTo(map); onMap.add(v.id); setActive(m, v.id === activeId); markSaved(v.id); }
   updateNames();
   const scrollTop = listEl.scrollTop;
   listEl.innerHTML = "";
@@ -741,7 +747,9 @@ function render({ refit = true } = {}) {
   listEl.appendChild(frag);
   if (!refit) { listEl.scrollTop = scrollTop; return; }
   if (!firstRender && shown.length) {
-    map.flyToBounds(markerLayer.getBounds(), { padding: [40, 40], maxZoom: 16, duration: reduceMotion() ? 0 : 0.6 });
+    const b = new maplibregl.LngLatBounds();
+    shown.forEach(v => b.extend([v.lng, v.lat]));
+    map.fitBounds(b, { padding: 40, maxZoom: 15, duration: reduceMotion() ? 0 : 600 });
   }
   firstRender = false;
 }
@@ -755,12 +763,9 @@ function select(id, { fromMap = false } = {}) {
   if (v && state.sort === "area" && !anyFilter() && !openAreas.has(v.area)) { openAreas.add(v.area); render({ refit: false }); setAllLabel(); }
   const el = listEl.querySelector(`[data-id="${id}"]`);
   if (el) { el.classList.add("active"); if (fromMap) el.scrollIntoView({ block: "nearest", behavior: reduceMotion() ? "auto" : "smooth" }); }
-  if (!fromMap) {
-    map.flyTo(m.getLatLng(), Math.max(map.getZoom(), 16), { duration: reduceMotion() ? 0 : 0.5 });
-    const open = () => { if (activeId === id && !m.isPopupOpen()) m.openPopup(); };
-    map.once("moveend", open);
-    setTimeout(open, 900);
-  }
+  if (fromMap) { openPopupFor(id); return; }
+  map.flyTo({ center: m.lngLat, zoom: Math.max(map.getZoom(), 15), duration: reduceMotion() ? 0 : 500 });
+  map.once("moveend", () => { if (activeId === id) openPopupFor(id); });
 }
 window.resetAll = function () {
   state.q = ""; document.getElementById("q").value = "";
@@ -783,20 +788,23 @@ ft.onclick = () => { filtersEl.classList.toggle("collapsed"); refreshFilterButto
 const toastEl = document.getElementById("toast");
 let toastT;
 function toast(msg) { toastEl.textContent = msg; toastEl.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => toastEl.hidden = true, 6000); }
-const LocateControl = L.Control.extend({
-  options: { position: "topleft" },
-  onAdd() {
-    const wrap = L.DomUtil.create("div", "leaflet-bar leaflet-control");
-    const a = L.DomUtil.create("a", "locate-btn", wrap);
-    a.href = "#"; a.setAttribute("role", "button"); a.title = a.ariaLabel = "Show my location";
-    a.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>`;
-    L.DomEvent.disableClickPropagation(wrap);
-    L.DomEvent.on(a, "click", e => { L.DomEvent.preventDefault(e); me ? map.flyTo(me, Math.max(map.getZoom(), 16)) : locate(); });
-    this.btn = a;
-    return wrap;
-  },
-});
-const locateCtl = new LocateControl().addTo(map);
+// One-button map control in MapLibre's control style
+function buttonControl(className, html, label, onClick, position) {
+  const wrap = document.createElement("div");
+  wrap.className = "maplibregl-ctrl maplibregl-ctrl-group";
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.className = className; btn.innerHTML = html; btn.title = label; btn.setAttribute("aria-label", label);
+  btn.addEventListener("click", onClick);
+  wrap.appendChild(btn);
+  map.addControl({ onAdd: () => wrap, onRemove: () => wrap.remove() }, position);
+  return { btn };
+}
+const locateCtl = buttonControl("locate-btn",
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>`,
+  "Show my location", () => me ? map.flyTo({ center: [me.lng, me.lat], zoom: Math.max(map.getZoom(), 15) }) : locate(), "top-left");
+// The built-in compass (in the zoom control) resets north; say how to rotate on its tooltip
+const compassBtn = map.getContainer().querySelector(".maplibregl-ctrl-compass");
+if (compassBtn) compassBtn.title = canHover ? "Reset to north (right-click drag or Ctrl + drag to rotate)" : "Reset to north (twist with two fingers to rotate)";
 const sortArea = document.getElementById("sortArea"), sortNear = document.getElementById("sortNear");
 function setSort(s) {
   state.sort = s;
@@ -806,6 +814,15 @@ function setSort(s) {
 }
 sortArea.onclick = () => setSort("area");
 sortNear.onclick = () => { if (me) setSort("near"); else { state.sort = "near"; locate(); } };
+// Accuracy circle as a 48-sided polygon (metres → degrees around the point)
+function circle(c, r) {
+  const pts = [];
+  for (let i = 0; i <= 48; i++) {
+    const a = i / 48 * 2 * Math.PI;
+    pts.push([c.lng + r * Math.cos(a) / (111320 * Math.cos(c.lat * Math.PI / 180)), c.lat + r * Math.sin(a) / 110574]);
+  }
+  return { type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: [pts] } };
+}
 function locate() {
   if (!("geolocation" in navigator)) { toast("This browser can't share your location."); return; }
   if (watchId != null) return;
@@ -813,19 +830,19 @@ function locate() {
   let first = true;
   watchId = navigator.geolocation.watchPosition(pos => {
     locateCtl.btn.classList.remove("busy"); locateCtl.btn.classList.add("on");
-    me = L.latLng(pos.coords.latitude, pos.coords.longitude);
+    me = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     if (!meMarker) {
-      meMarker = L.marker(me, { interactive: false, keyboard: false, zIndexOffset: 2000,
-        icon: L.divIcon({ className: "me-dot", html: "<span></span>", iconSize: [22, 22] }) }).addTo(map);
-      accuracy = L.circle(me, { radius: pos.coords.accuracy, renderer, interactive: false, weight: 1, opacity: 0.5, fillOpacity: 0.1, color: css("--me"), fillColor: css("--me") }).addTo(map);
-    } else { meMarker.setLatLng(me); accuracy.setLatLng(me).setRadius(pos.coords.accuracy); }
+      const el = document.createElement("div"); el.className = "me-dot"; el.innerHTML = "<span></span>"; el.style.zIndex = 2000;
+      meMarker = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([me.lng, me.lat]).addTo(map);
+    } else meMarker.setLngLat([me.lng, me.lat]);
+    if (baseReady) map.getSource("accuracy").setData(circle(me, pos.coords.accuracy));
     if (first) {
       first = false; lastSortedAt = me;
-      const inCity = L.latLngBounds(map.options.maxBounds).contains(me);
-      if (inCity) map.flyTo(me, Math.max(map.getZoom(), 15.5), { duration: reduceMotion() ? 0 : 0.6 });
+      const inCity = me.lng > EDINBURGH[0][0] && me.lng < EDINBURGH[1][0] && me.lat > EDINBURGH[0][1] && me.lat < EDINBURGH[1][1];
+      if (inCity) map.flyTo({ center: [me.lng, me.lat], zoom: Math.max(map.getZoom(), 14.5), duration: reduceMotion() ? 0 : 600 });
       else toast("You look to be outside central Edinburgh. Distances are measured from where you are.");
       setSort("near");
-    } else if (me.distanceTo(lastSortedAt) > 30) {
+    } else if (metres(me, lastSortedAt) > 30) {
       lastSortedAt = me; render({ refit: false });  // re-sort as you walk, without moving the map
     }
   }, err => {
@@ -838,52 +855,16 @@ function locate() {
   }, { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 });
 }
 
-// ---- compass: shows which way is north once rotated; tap to reset
-const CompassControl = L.Control.extend({
-  options: { position: "topleft" },
-  onAdd() {
-    const wrap = L.DomUtil.create("div", "leaflet-bar leaflet-control");
-    const a = L.DomUtil.create("a", "compass-btn", wrap);
-    a.href = "#"; a.setAttribute("role", "button");
-    a.title = a.ariaLabel = canHover ? "Reset to north (Shift + drag to rotate the map)" : "Reset to north (twist with two fingers to rotate)";
-    a.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 15.5 12h-7z" fill="var(--accent)"/><path d="M12 21 8.5 12h7z" fill="currentColor" opacity=".55"/></svg>`;
-    L.DomEvent.disableClickPropagation(wrap);
-    L.DomEvent.on(a, "click", e => { L.DomEvent.preventDefault(e); map.setBearing(0); });
-    this.btn = a;
-    return wrap;
-  },
-});
-const compass = new CompassControl().addTo(map);
-let rotT;
-map.on("rotate", () => {
-  const b = map.getBearing();
-  compass.btn.querySelector("svg").style.transform = `rotate(${-b}deg)`;
-  compass.btn.classList.toggle("rotated", Math.abs(b) > 0.5);
-  clearTimeout(rotT); rotT = setTimeout(() => { updateLabels(); updateNames(); }, 120);
-});
-
 // ---- maximise the map (CSS only; the Fullscreen API isn't available on iPhone)
 const appEl = document.querySelector(".app");
 const MAX_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>`;
 const MIN_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>`;
-const MaxControl = L.Control.extend({
-  options: { position: "topright" },
-  onAdd() {
-    const wrap = L.DomUtil.create("div", "leaflet-bar leaflet-control");
-    const a = L.DomUtil.create("a", "max-btn", wrap);
-    a.href = "#"; a.setAttribute("role", "button");
-    L.DomEvent.disableClickPropagation(wrap);
-    L.DomEvent.on(a, "click", e => { L.DomEvent.preventDefault(e); setMaximised(!appEl.classList.contains("map-max")); });
-    this.btn = a;
-    return wrap;
-  },
-});
-const maxCtl = new MaxControl().addTo(map);
+const maxCtl = buttonControl("max-btn", MAX_ICON, "Maximise map", () => setMaximised(!appEl.classList.contains("map-max")), "top-right");
 function setMaximised(on) {
   appEl.classList.toggle("map-max", on);
   maxCtl.btn.innerHTML = on ? MIN_ICON : MAX_ICON;
-  maxCtl.btn.title = maxCtl.btn.ariaLabel = on ? "Exit full map (Esc)" : "Maximise map";
-  requestAnimationFrame(() => map.invalidateSize());
+  maxCtl.btn.title = on ? "Exit full map (Esc)" : "Maximise map"; maxCtl.btn.setAttribute("aria-label", maxCtl.btn.title);
+  requestAnimationFrame(() => map.resize());
 }
 setMaximised(false);
 document.addEventListener("keydown", e => { if (e.key === "Escape" && appEl.classList.contains("map-max")) setMaximised(false); });
@@ -895,7 +876,7 @@ function setListCollapsed(on) {
   listBtn.setAttribute("aria-expanded", !on);
   listBtn.querySelector("span").textContent = on ? `Show bar list (${currentShown.length})` : "Hide bar list";
   if (typeof areasBtn !== "undefined") setAllLabel();
-  requestAnimationFrame(() => map.invalidateSize());
+  requestAnimationFrame(() => map.resize());
 }
 listBtn.onclick = () => setListCollapsed(!appEl.classList.contains("list-collapsed"));
 const areasBtn = document.getElementById("toggleAreas");
@@ -909,11 +890,8 @@ areasBtn.onclick = () => {
 };
 
 // ---- boot
-map.fitBounds(L.latLngBounds(VENUES.map(v => [v.lat, v.lng])), { padding: [24, 24] });
 render();
-styleBase(); updateLabels();
-map.on("zoomend", () => { styleBase(); });
-map.on("moveend", () => { updateLabels(); updateNames(); });
+styleBase(); sizeClass();
 setListCollapsed(false);
 // keep "Open now" statuses current
 setInterval(() => render({ refit: false }), 5 * 60 * 1000);
